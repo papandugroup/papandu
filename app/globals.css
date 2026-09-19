@@ -1262,3 +1262,68 @@ select.ed-input {
     transition-duration: 1ms;
   }
 }
+
+/* ==========================================================================
+   NEWSLETTER
+   ========================================================================== */
+
+/* 40px of side padding costs a quarter of a 320px screen, so it scales down. */
+.newsletter-card {
+  padding: clamp(32px, 7vw, 56px) clamp(20px, 5vw, 40px);
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 10px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* min-width:0 is the actual overflow fix. A flex item defaults to
+   min-width:auto, which floors it at min-content — and an <input>'s
+   min-content comes from its default size="20" attribute, roughly 20
+   characters. That floor plus a flex-shrink:0 button was wider than the card
+   on a phone, so the JOIN button hung off the right edge. */
+.newsletter-input {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Below this, side-by-side leaves the input too narrow to read what you typed;
+   stacked full-width fields are easier to hit and easier to scan. */
+@media (max-width: 519px) {
+  .newsletter-form {
+    flex-direction: column;
+  }
+
+  .newsletter-form .btn-gold {
+    width: 100%;
+  }
+}
+
+/* Luxury Checkout Inputs */
+.checkout-input {
+  width: 100%;
+  padding: 10px 14px;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(9, 10, 14, 0.2);
+  color: var(--papandu-black);
+  font-size: 0.88rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background-color var(--transition-fast);
+}
+
+.checkout-input::placeholder {
+  color: #8C867D;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.checkout-input:focus {
+  border-color: var(--papandu-red);
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(118, 5, 4, 0.12);
+}
+

@@ -40,13 +40,12 @@ export const Newsletter: React.FC = () => {
       <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(9, 10, 14, 0.12)' }} />
 
       <div
-        className="container"
+        className="container newsletter-card"
         style={{
           maxWidth: '640px',
           position: 'relative',
           zIndex: 2,
           backgroundColor: 'var(--papandu-cream)',
-          padding: '56px 40px',
           boxShadow: '0 30px 80px rgba(0,0,0,0.35)',
           textAlign: 'center',
         }}
@@ -86,15 +85,15 @@ export const Newsletter: React.FC = () => {
             </span>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} style={{ display: 'flex', gap: '8px', maxWidth: '480px', margin: '0 auto' }}>
+          <form onSubmit={handleSubmit} className="newsletter-form">
             <input
               type="email"
               placeholder="ENTER YOUR EMAIL..."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              className="newsletter-input"
               style={{
-                flex: 1,
                 padding: '14px 18px',
                 backgroundColor: '#FFFFFF',
                 border: '1px solid rgba(9, 10, 14, 0.15)',

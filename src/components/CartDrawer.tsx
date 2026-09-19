@@ -183,7 +183,7 @@ export const CartDrawer: React.FC = () => {
               style={{
                 width: `${progressPercent}%`,
                 height: '100%',
-                backgroundColor: progressPercent === 100 ? 'var(--papandu-gold)' : 'var(--papandu-red)',
+                backgroundColor: progressPercent === 100 ? '#1D7036' : 'var(--papandu-red)',
                 transition: 'width 0.4s ease',
               }}
             />
@@ -332,22 +332,13 @@ export const CartDrawer: React.FC = () => {
                 </div>
               )}
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginBottom: '18px' }}>
                 <input
                   type="text"
                   placeholder="Full Name *"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: '#EDE6DC',
-                    border: '1px solid rgba(9, 10, 14, 0.12)',
-                    color: 'var(--papandu-black)',
-                    fontSize: '0.85rem',
-                    borderRadius: '2px',
-                    fontFamily: 'var(--font-mono)',
-                  }}
+                  className="checkout-input"
                   required
                 />
                 <input
@@ -355,16 +346,7 @@ export const CartDrawer: React.FC = () => {
                   placeholder="Email Address (for Paystack receipt) *"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: '#EDE6DC',
-                    border: '1px solid rgba(9, 10, 14, 0.12)',
-                    color: 'var(--papandu-black)',
-                    fontSize: '0.85rem',
-                    borderRadius: '2px',
-                    fontFamily: 'var(--font-mono)',
-                  }}
+                  className="checkout-input"
                   required
                 />
                 <input
@@ -372,39 +354,21 @@ export const CartDrawer: React.FC = () => {
                   placeholder="Phone Number (optional)"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: '#EDE6DC',
-                    border: '1px solid rgba(9, 10, 14, 0.12)',
-                    color: 'var(--papandu-black)',
-                    fontSize: '0.85rem',
-                    borderRadius: '2px',
-                    fontFamily: 'var(--font-mono)',
-                  }}
+                  className="checkout-input"
                 />
                 <input
                   type="text"
                   placeholder="Delivery Address / City (optional)"
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '8px 12px',
-                    backgroundColor: '#EDE6DC',
-                    border: '1px solid rgba(9, 10, 14, 0.12)',
-                    color: 'var(--papandu-black)',
-                    fontSize: '0.85rem',
-                    borderRadius: '2px',
-                    fontFamily: 'var(--font-mono)',
-                  }}
+                  className="checkout-input"
                 />
               </div>
 
               {/* Subtotal & Totals */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-                <span style={{ color: '#6B6459', fontSize: '0.9rem' }}>Subtotal</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.2rem', color: 'var(--papandu-black)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px', padding: '0 2px' }}>
+                <span style={{ color: '#6B6459', fontSize: '0.9rem', letterSpacing: '0.02em' }}>Subtotal</span>
+                <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.25rem', color: 'var(--papandu-black)' }}>
                   {formatPrice(cartTotalNGN)}
                 </span>
               </div>
@@ -413,16 +377,23 @@ export const CartDrawer: React.FC = () => {
               <button
                 type="submit"
                 disabled={isProcessing}
-                className="btn-gold"
-                style={{ width: '100%', padding: '14px', fontSize: '1.1rem' }}
+                className="btn-primary"
+                style={{
+                  width: '100%',
+                  padding: '16px',
+                  fontSize: '1.1rem',
+                  letterSpacing: '0.08em',
+                  cursor: isProcessing ? 'not-allowed' : 'pointer',
+                  opacity: isProcessing ? 0.75 : 1,
+                }}
               >
                 {isProcessing ? (
                   <span>LAUNCHING PAYSTACK...</span>
                 ) : (
                   <>
-                    <Lock size={16} />
+                    <Lock size={16} color="#FBDC6A" />
                     <span>PAY WITH PAYSTACK</span>
-                    <ArrowRight size={18} />
+                    <ArrowRight size={18} color="#FBDC6A" />
                   </>
                 )}
               </button>

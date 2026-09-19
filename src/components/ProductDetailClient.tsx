@@ -635,74 +635,34 @@ export default function ProductDetailClient({
                   >
                     Checkout Details:
                   </label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.75rem' }}>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '0.75rem' }}>
                     <input
                       type="text"
                       placeholder="Full Name *"
                       value={checkoutName}
                       onChange={(e) => setCheckoutName(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
+                      className="checkout-input"
                     />
                     <input
                       type="email"
                       placeholder="Email Address (for receipt) *"
                       value={checkoutEmail}
                       onChange={(e) => setCheckoutEmail(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
+                      className="checkout-input"
                     />
                     <input
                       type="tel"
                       placeholder="Phone Number (optional)"
                       value={checkoutPhone}
                       onChange={(e) => setCheckoutPhone(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
+                      className="checkout-input"
                     />
                     <input
                       type="text"
                       placeholder="Delivery Address / City (optional)"
                       value={checkoutAddress}
                       onChange={(e) => setCheckoutAddress(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '0.65rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
+                      className="checkout-input"
                     />
                   </div>
                   {checkoutError && (
