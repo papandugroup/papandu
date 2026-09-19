@@ -81,33 +81,9 @@ export default async function HomePage() {
             <StarIcon size={13} color="var(--papandu-red)" />
           </div>
 
-          <p className="reveal-on-scroll" style={{ fontSize: 'clamp(1.15rem, 2.6vw, 1.55rem)', lineHeight: 1.6, color: 'var(--papandu-black)', fontWeight: 400, marginBottom: '36px' }}>
+          <p className="reveal-on-scroll" style={{ fontSize: 'clamp(1.15rem, 2.6vw, 1.55rem)', lineHeight: 1.6, color: 'var(--papandu-black)', fontWeight: 400, margin: 0 }}>
             Every PAPANDU piece is a distinct design built on a compelling story, released in limited drops that keep the culture exclusive and the community tight. For The Stars unfolds through contrast — restraint on the outside, self-expression stitched into every detail — built for a tribe that wears its story.
           </p>
-
-          <div style={{ display: 'flex', justifyContent: 'center', flexWrap: 'wrap', gap: '14px 36px' }}>
-            {categories.map((cat) => (
-              <Link
-                key={cat.title}
-                href={cat.status === 'live' ? cat.href : '#tribe-join'}
-                className="drop-quicklink"
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.82rem',
-                  letterSpacing: '0.12em',
-                  color: cat.status === 'live' ? '#6B6459' : '#B3AAA0',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                }}
-              >
-                <span>{cat.title}</span>
-                {cat.status === 'coming-soon' && (
-                  <span style={{ fontSize: '0.62rem', color: 'var(--papandu-red)' }}>SOON</span>
-                )}
-              </Link>
-            ))}
-          </div>
         </div>
       </section>
 
