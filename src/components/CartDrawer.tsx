@@ -5,6 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { X, Trash2, Plus, Minus, Lock, ArrowRight, Truck } from 'lucide-react';
 import { useStore } from '@/context/StoreContext';
+import { useDrawerTransition, useEscapeKey } from '@/hooks/useDrawerTransition';
 import { triggerPaystackCheckout } from '@/lib/paystack';
 import { StarIcon } from './StarIcon';
 
@@ -29,7 +30,11 @@ export const CartDrawer: React.FC = () => {
   const [formError, setFormError] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
 
-  if (!isCartOpen) return null;
+  const drawer = useDrawerTransition(isCartOpen);
+  useEscapeKey(isCartOpen, closeCart);
+
+  // Unmounts only once the exit transition has finished, not on the click.
+  if (!drawer.isMounted) return null;
 
   const progressPercent = Math.min(100, Math.round((cartTotalNGN / freeShippingThresholdNGN) * 100));
   const remainingForFreeShipping = Math.max(0, freeShippingThresholdNGN - cartTotalNGN);
@@ -99,17 +104,23 @@ export const CartDrawer: React.FC = () => {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Shopping cart"
       style={{
         position: 'fixed',
         inset: 0,
         zIndex: 100,
         display: 'flex',
         justifyContent: 'flex-end',
+        pointerEvents: drawer.isVisible ? 'auto' : 'none',
       }}
     >
       {/* Backdrop */}
       <div
         onClick={closeCart}
+        data-open={drawer.isVisible}
+        className="drawer-backdrop"
         style={{
           position: 'fixed',
           inset: 0,
@@ -120,7 +131,10 @@ export const CartDrawer: React.FC = () => {
 
       {/* Slide-out Drawer Panel */}
       <div
+        ref={drawer.ref}
         data-lenis-prevent
+        data-open={drawer.isVisible}
+        className="drawer-panel-right"
         style={{
           position: 'relative',
           width: '100%',
@@ -132,7 +146,6 @@ export const CartDrawer: React.FC = () => {
           flexDirection: 'column',
           zIndex: 10,
           boxShadow: '-10px 0 40px rgba(0, 0, 0, 0.8)',
-          animation: 'slideInRight 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
       >
 

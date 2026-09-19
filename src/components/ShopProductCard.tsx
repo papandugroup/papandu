@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ProductItem } from '@/data/fallbackProducts';
 import { useStore } from '@/context/StoreContext';
+import { isDropLive } from '@/lib/dropConfig';
 import { StarIcon } from './StarIcon';
 
 // Card titles drop a leading quoted drop-name (e.g. '"For The Stars" Signature Stripe Shirt'
@@ -32,7 +33,7 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const isSoldOut = item.status === 'SOLD OUT' || item.stockCount <= 0;
-  const isComingSoon = item.status === 'COMING SOON';
+  const isComingSoon = item.status === 'COMING SOON' && !isDropLive();
 
   const href = item.colorSlug
     ? `/shop/${item.slug}?color=${encodeURIComponent(item.colorSlug)}`

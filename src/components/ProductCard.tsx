@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ProductItem } from '@/data/fallbackProducts';
 import { useStore } from '@/context/StoreContext';
+import { isDropLive } from '@/lib/dropConfig';
 import { StarIcon } from './StarIcon';
 import { Plus, Check } from 'lucide-react';
 
@@ -19,7 +20,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const [addedNotice, setAddedNotice] = useState(false);
 
   const isSoldOut = product.status === 'SOLD OUT' || product.stockCount <= 0;
-  const isComingSoon = product.status === 'COMING SOON';
+  const isComingSoon = product.status === 'COMING SOON' && !isDropLive();
   const isDisabled = isSoldOut || isComingSoon;
 
   const handleQuickAdd = (e: React.MouseEvent) => {

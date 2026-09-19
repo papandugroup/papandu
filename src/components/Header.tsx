@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import { useStore, CurrencyType } from '@/context/StoreContext';
+import { useDrawerTransition, useEscapeKey } from '@/hooks/useDrawerTransition';
 import { StarIcon } from './StarIcon';
 
 export const Header: React.FC = () => {
@@ -13,6 +14,10 @@ export const Header: React.FC = () => {
   const { cart, openCart, currency, setCurrency } = useStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [currencyDropdownOpen, setCurrencyDropdownOpen] = useState(false);
+
+  const closeMobileMenu = useCallback(() => setMobileMenuOpen(false), []);
+  const menu = useDrawerTransition(mobileMenuOpen);
+  useEscapeKey(mobileMenuOpen, closeMobileMenu);
 
   const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -29,7 +34,12 @@ export const Header: React.FC = () => {
     <header style={{
       position: 'sticky',
       top: 0,
-      zIndex: 40,
+      // Above PromoBar (50) on purpose. The header creates a stacking context,
+      // so the mobile drawer nested below is clamped to this value no matter
+      // what z-index it sets — at 40 the promo bar covered the drawer's close
+      // button and the menu couldn't be dismissed. CartDrawer (100) and
+      // OrderSuccessModal (200) are root-level siblings and still sit above.
+      zIndex: 60,
       backgroundColor: 'var(--papandu-red)',
       borderBottom: '1px solid rgba(255, 255, 255, 0.12)',
       transition: 'all 0.2s ease',
@@ -37,15 +47,15 @@ export const Header: React.FC = () => {
       <div
         className="container"
         style={{
-          position: 'relative',
-          display: 'flex',
+          display: 'grid',
+          gridTemplateColumns: '1fr auto 1fr',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          gap: '12px',
           height: '72px',
         }}
       >
         {/* Left Nav (Desktop) & Mobile Hamburger */}
-        <div style={{ display: 'flex', alignItems: 'center', zIndex: 3 }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <nav
             style={{
               display: 'none',
@@ -85,25 +95,17 @@ export const Header: React.FC = () => {
             style={{ display: 'flex', color: '#FFFFFF', padding: '8px' }}
             className="mobile-menu-btn"
             aria-label="Open menu"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="mobile-menu"
           >
             <Menu size={24} />
           </button>
         </div>
 
-        {/* Center: Papandu Wordmark Logo — Always centered in the middle of the frame on all screen sizes */}
-        <div
-          style={{
-            position: 'absolute',
-            left: '50%',
-            top: '50%',
-            transform: 'translate(-50%, -50%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 2,
-            pointerEvents: 'auto',
-          }}
-        >
+        {/* Center: Papandu Wordmark Logo. This is the grid's middle column rather
+            than an absolutely-positioned overlay, so the side clusters reserve
+            real space for it and can never overlap it on narrow screens. */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center' }}>
             <Image
               src="/brand/logos/svg/papandu-logo-White.svg"
@@ -111,16 +113,17 @@ export const Header: React.FC = () => {
               width={160}
               height={36}
               priority
-              style={{ height: '32px', width: 'auto' }}
+              className="header-logo"
             />
           </Link>
         </div>
 
         {/* Right Nav: Currency + Studio CMS + Cart */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', zIndex: 3, marginLeft: 'auto' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '18px', justifySelf: 'end' }}>
 
-          {/* Currency Switcher */}
-          <div style={{ position: 'relative' }}>
+          {/* Currency Switcher — header-only from 860px up; below that it moves
+              into the mobile drawer, where there's room for a real tap target. */}
+          <div className="header-currency" style={{ position: 'relative' }}>
             <button
               onClick={() => setCurrencyDropdownOpen(!currencyDropdownOpen)}
               style={{
@@ -224,8 +227,15 @@ export const Header: React.FC = () => {
       </div>
 
       {/* Mobile Drawer Navigation */}
-      {mobileMenuOpen && (
+      {menu.isMounted && (
         <div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          ref={menu.ref}
+          data-open={menu.isVisible}
+          className="drawer-panel-left"
           style={{
             position: 'fixed',
             inset: 0,
@@ -243,31 +253,76 @@ export const Header: React.FC = () => {
               width={140}
               height={30}
             />
-            <button onClick={() => setMobileMenuOpen(false)} style={{ color: '#FFF' }}>
+            <button onClick={closeMobileMenu} style={{ color: '#FFF', padding: '6px' }} aria-label="Close menu">
               <X size={28} />
             </button>
           </div>
 
           <nav style={{ display: 'flex', flexDirection: 'column', gap: '24px', flex: 1 }}>
-            {navLinks.map((link) => (
+            {navLinks.map((link, i) => (
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={closeMobileMenu}
+                className="drawer-stagger-item"
                 style={{
+                  '--stagger': i,
                   fontFamily: 'var(--font-display)',
                   fontSize: '2.5rem',
                   color: pathname === link.href ? 'var(--papandu-gold)' : 'var(--papandu-white)',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '12px',
-                }}
+                } as React.CSSProperties}
               >
                 {pathname === link.href && <StarIcon size={20} color="#FBDC6A" />}
                 <span>{link.label}</span>
               </Link>
             ))}
           </nav>
+
+          {/* Currency lives here on mobile — the header has no room for it beside
+              the centred wordmark. Laid out as segmented buttons rather than a
+              dropdown so it needs one tap instead of two. */}
+          <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '20px', marginBottom: '20px' }}>
+            <span
+              style={{
+                display: 'block',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.7rem',
+                letterSpacing: '0.16em',
+                color: '#A29D94',
+                marginBottom: '12px',
+              }}
+            >
+              CURRENCY
+            </span>
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {currencies.map((c) => {
+                const isActive = currency === c;
+                return (
+                  <button
+                    key={c}
+                    onClick={() => setCurrency(c)}
+                    aria-pressed={isActive}
+                    style={{
+                      flex: 1,
+                      padding: '12px 8px',
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.8rem',
+                      letterSpacing: '0.08em',
+                      borderRadius: '2px',
+                      border: `1px solid ${isActive ? 'var(--papandu-gold)' : 'rgba(255, 255, 255, 0.18)'}`,
+                      backgroundColor: isActive ? 'rgba(251, 220, 106, 0.12)' : 'transparent',
+                      color: isActive ? 'var(--papandu-gold)' : '#ECE8E1',
+                    }}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           <div style={{ borderTop: '1px solid rgba(255, 255, 255, 0.1)', paddingTop: '20px' }}>
             <p style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', color: '#A29D94' }}>

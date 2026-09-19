@@ -1,6 +1,7 @@
 import { createClient } from 'next-sanity';
 import imageUrlBuilder from '@sanity/image-url';
 import { FALLBACK_PRODUCTS, ProductItem } from '@/data/fallbackProducts';
+import { resolveProductStatus } from '@/lib/dropConfig';
 
 export const projectId = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '';
 export const dataset = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production';
@@ -29,7 +30,7 @@ export function urlFor(source: any) {
 // Data Fetchers with Fallbacks
 export async function getProducts(): Promise<ProductItem[]> {
   if (!sanityClient) {
-    return FALLBACK_PRODUCTS;
+    return FALLBACK_PRODUCTS.map(resolveProductStatus);
   }
 
   try {
@@ -53,16 +54,18 @@ export async function getProducts(): Promise<ProductItem[]> {
       stockCount
     }`;
     const products = await sanityClient.fetch(query);
-    return products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+    const list = products && products.length > 0 ? products : FALLBACK_PRODUCTS;
+    return list.map(resolveProductStatus);
   } catch (error) {
     console.warn('Error fetching from Sanity, using fallback products:', error);
-    return FALLBACK_PRODUCTS;
+    return FALLBACK_PRODUCTS.map(resolveProductStatus);
   }
 }
 
 export async function getProductBySlug(slug: string): Promise<ProductItem | null> {
+  const fallback = FALLBACK_PRODUCTS.find((p) => p.slug === slug);
   if (!sanityClient) {
-    return FALLBACK_PRODUCTS.find((p) => p.slug === slug) || null;
+    return fallback ? resolveProductStatus(fallback) : null;
   }
 
   try {
@@ -86,10 +89,11 @@ export async function getProductBySlug(slug: string): Promise<ProductItem | null
       stockCount
     }`;
     const product = await sanityClient.fetch(query, { slug });
-    return product || FALLBACK_PRODUCTS.find((p) => p.slug === slug) || null;
+    const target = product || fallback;
+    return target ? resolveProductStatus(target) : null;
   } catch (error) {
     console.warn(`Error fetching product ${slug} from Sanity:`, error);
-    return FALLBACK_PRODUCTS.find((p) => p.slug === slug) || null;
+    return fallback ? resolveProductStatus(fallback) : null;
   }
 }
 

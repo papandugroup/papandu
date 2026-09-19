@@ -323,16 +323,6 @@ img {
   animation: starPulse 4s ease-in-out infinite;
 }
 
-/* Slide in from right (Cart Drawer) */
-@keyframes slideInRight {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
@@ -353,12 +343,36 @@ img {
 }
 
 /* Header Responsive Breakpoints */
+.header-logo {
+  height: 26px;
+  width: auto;
+}
+
+/* The currency switcher is hidden from the header below 860px and rendered in
+   the mobile drawer instead — at phone widths the header can't fit the centred
+   wordmark, the hamburger, the switcher and the cart without them colliding. */
+.header-currency {
+  display: none;
+}
+
+@media (min-width: 480px) {
+  .header-logo {
+    height: 30px;
+  }
+}
+
 @media (min-width: 860px) {
   .desktop-nav {
     display: flex !important;
   }
   .mobile-menu-btn {
     display: none !important;
+  }
+  .header-currency {
+    display: block;
+  }
+  .header-logo {
+    height: 32px;
   }
 }
 
@@ -1115,4 +1129,136 @@ select.ed-input {
   .ed-rowtitle,
   .ed-channel,
   .ed-bigbtn .ed-bigbtn-arrow { transition: none; }
+}
+
+/* ==========================================================================
+   DRAWER TRANSITIONS — mobile nav (slides from left) + cart (slides from right)
+   --------------------------------------------------------------------------
+   Transitions rather than @keyframes, so the same declaration plays forwards on
+   open and backwards on close. The `data-open` attribute is toggled by
+   useDrawerTransition, which holds the markup mounted until the exit finishes.
+
+   The easing is a decelerating cubic-bezier: the panel arrives fast and settles
+   softly, which is what makes a slide read as "sleek" rather than mechanical.
+   Exits are deliberately quicker than entrances — waiting on a dismissal feels
+   sluggish in a way that waiting on an arrival does not.
+   ========================================================================== */
+
+.drawer-backdrop {
+  opacity: 0;
+  transition: opacity 260ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.drawer-backdrop[data-open='true'] {
+  opacity: 1;
+  transition: opacity 400ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.drawer-panel-right {
+  transform: translate3d(100%, 0, 0);
+  transition: transform 300ms cubic-bezier(0.55, 0, 1, 0.45);
+  will-change: transform;
+}
+
+.drawer-panel-right[data-open='true'] {
+  transform: translate3d(0, 0, 0);
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.drawer-panel-left {
+  transform: translate3d(-100%, 0, 0);
+  transition: transform 300ms cubic-bezier(0.55, 0, 1, 0.45);
+  will-change: transform;
+}
+
+.drawer-panel-left[data-open='true'] {
+  transform: translate3d(0, 0, 0);
+  transition: transform 460ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Nav links rise in behind the panel, staggered. The delay is set per item via
+   the --stagger custom property so the markup stays a plain map(). On exit the
+   stagger is dropped — items leaving one by one looks hesitant. */
+.drawer-stagger-item {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 180ms ease, transform 180ms ease;
+}
+
+[data-open='true'] .drawer-stagger-item {
+  opacity: 1;
+  transform: none;
+  transition: opacity 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--stagger, 0) * 55ms + 90ms),
+              transform 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--stagger, 0) * 55ms + 90ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drawer-backdrop,
+  .drawer-backdrop[data-open='true'],
+  .drawer-panel-right,
+  .drawer-panel-right[data-open='true'],
+  .drawer-panel-left,
+  .drawer-panel-left[data-open='true'],
+  .drawer-stagger-item,
+  [data-open='true'] .drawer-stagger-item {
+    transition-duration: 1ms;
+    transition-delay: 0ms;
+  }
+}
+
+/* ==========================================================================
+   PROMO BAR
+   ========================================================================== */
+
+/* Collapses its own height on dismiss rather than disappearing, so the page
+   below slides up instead of jumping. Generous max-height because the message
+   wraps to three lines at 320px. */
+.promo-bar {
+  max-height: 160px;
+  opacity: 1;
+  transition: max-height 320ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 200ms ease;
+}
+
+.promo-bar[data-collapsing='true'] {
+  max-height: 0;
+  opacity: 0;
+}
+
+.promo-bar-close {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 2px;
+  color: rgba(9, 10, 14, 0.62);
+  background-color: transparent;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+}
+
+.promo-bar-close:hover {
+  color: var(--papandu-black);
+  background-color: rgba(9, 10, 14, 0.1);
+}
+
+.promo-bar-close:focus-visible {
+  outline: 2px solid var(--papandu-red);
+  outline-offset: 1px;
+}
+
+@media (min-width: 768px) {
+  .promo-bar-close {
+    right: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .promo-bar {
+    transition-duration: 1ms;
+  }
 }

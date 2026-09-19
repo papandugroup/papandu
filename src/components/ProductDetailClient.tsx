@@ -7,6 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { ProductItem } from '@/data/fallbackProducts';
 import { useStore } from '@/context/StoreContext';
 import { triggerPaystackCheckout } from '@/lib/paystack';
+import { isDropLive } from '@/lib/dropConfig';
 import ProductCard from './ProductCard';
 import StarIcon from './StarIcon';
 import {
@@ -83,7 +84,7 @@ export default function ProductDetailClient({
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
 
   const isSoldOut = product.status === 'SOLD OUT' || product.stockCount === 0;
-  const isComingSoon = product.status === 'COMING SOON';
+  const isComingSoon = product.status === 'COMING SOON' && !isDropLive();
   const isPurchaseDisabled = isSoldOut || isComingSoon;
 
   const handleAddToCart = () => {

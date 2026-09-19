@@ -6,6 +6,7 @@ import ShopProductCard, { ShopDisplayItem } from '../../src/components/ShopProdu
 import StarIcon from '../../src/components/StarIcon';
 import { FALLBACK_PRODUCTS, ProductItem } from '../../src/data/fallbackProducts';
 import { getProducts } from '../../src/lib/sanity.client';
+import { resolveProductStatus } from '../../src/lib/dropConfig';
 import { SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
 
 const CATEGORIES = [
@@ -56,7 +57,9 @@ function expandColorways(products: ProductItem[]): ShopDisplayItem[] {
 
 function ShopPageContent() {
   const searchParams = useSearchParams();
-  const [products, setProducts] = useState<ProductItem[]>(FALLBACK_PRODUCTS);
+  const [products, setProducts] = useState<ProductItem[]>(() =>
+    FALLBACK_PRODUCTS.map(resolveProductStatus)
+  );
   const [selectedCategory, setSelectedCategory] = useState<string>(() => {
     const requested = searchParams.get('category');
     return requested && CATEGORIES.some((c) => c.id === requested) ? requested : 'all';
