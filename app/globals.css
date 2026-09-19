@@ -1327,3 +1327,85 @@ select.ed-input {
   box-shadow: 0 0 0 3px rgba(118, 5, 4, 0.12);
 }
 
+
+/* ==========================================================================
+   PAYMENT ACCEPTANCE MARKS (cart drawer)
+   ========================================================================== */
+
+/* Visually hidden, still read by screen readers — the icon-only methods
+   (bank transfer, USSD) carry no wordmark, so they need a text label. */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.pay-row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin-top: 14px;
+}
+
+.pay-marks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pay-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 26px;
+  flex-shrink: 0;
+  background-color: #FFFFFF;
+  border: 1px solid rgba(9, 10, 14, 0.14);
+  border-radius: 3px;
+  overflow: hidden;
+  color: rgba(9, 10, 14, 0.66);
+}
+
+.pay-tile img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* contain, so a mark is never stretched off its official proportions */
+  object-fit: contain;
+  padding: 3px;
+}
+
+/* Visa and Mastercard ship their own full-bleed card background, so they run
+   to the tile edge instead of floating on white with padding. */
+.pay-tile-bleed {
+  background-color: transparent;
+  border-color: transparent;
+}
+
+.pay-tile-bleed img {
+  padding: 0;
+  object-fit: cover;
+}
+
+.pay-note {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6B6459;
+  text-align: center;
+  line-height: 1.5;
+}

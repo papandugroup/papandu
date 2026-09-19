@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { X, Trash2, Plus, Minus, Lock, ArrowRight, Truck } from 'lucide-react';
 import { useStore } from '@/context/StoreContext';
 import { useDrawerTransition, useEscapeKey } from '@/hooks/useDrawerTransition';
+import { PaymentMethods } from './PaymentMethods';
 import { triggerPaystackCheckout } from '@/lib/paystack';
 import { StarIcon } from './StarIcon';
 
@@ -398,11 +399,7 @@ export const CartDrawer: React.FC = () => {
                 )}
               </button>
 
-              <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', marginTop: '10px' }}>
-                <span style={{ fontSize: '0.7rem', color: '#6B6459', fontFamily: 'var(--font-mono)' }}>
-                  SECURED BY PAYSTACK · CARDS, USSD & TRANSFER
-                </span>
-              </div>
+              <PaymentMethods />
             </form>
           </div>
         )}
