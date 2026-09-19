@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import StarIcon from '@/components/StarIcon';
 import Newsletter from '@/components/Newsletter';
-import { ArrowRight, Compass, Flame, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Our Story & Brand Philosophy | PAPANDU Store',
@@ -12,449 +12,251 @@ export const metadata: Metadata = {
     'Made in Nigeria. Worn by a tribe of one. Discover the story, mission, and craftsmanship behind PAPANDU streetwear.',
 };
 
+/* The three pillars, as an expandable index rather than three cards. Each one
+   carries a short mono "tag" that doubles as the collapsed-state summary. */
+const CREED = [
+  {
+    num: '01',
+    title: 'Originality',
+    tag: 'No template fashion',
+    body: 'No template fashion. We build from blank canvases, sketching graphic narratives and mythic African archetypes that cannot be replicated by trend factories. Nothing here is reverse-engineered from a trending silhouette — the drawing comes first, and the garment is built to carry it.',
+  },
+  {
+    num: '02',
+    title: 'Fearless Art',
+    tag: 'Comic panels & street poetry',
+    body: 'Our graphics tell the unfiltered, kinetic reality of Nigerian youth culture — bold comic panels, vintage varsity typography, and raw street poetry. We treat the front of a shirt the way a printmaker treats a poster: as a surface that is supposed to say something.',
+  },
+  {
+    num: '03',
+    title: 'Craftsmanship',
+    tag: 'Hand-inspected in Lagos',
+    body: 'Every piece is tailored with heavyweight textiles, double-stitched seams, custom metal hardware, and hand-inspected in Lagos before it touches your hands. If a piece does not survive the studio\u2019s own wear test, it does not make the drop.',
+  },
+];
+
+/* Construction spec, in the flat label/value form a brand actually publishes.
+   This replaces the vaguer "craftsmanship" prose that used to sit in a card. */
+const SPEC = [
+  { k: 'Fabric weight', v: '240–460 GSM cotton, chosen per silhouette — lighter for layering pieces, heaviest for outerwear and box-fit tees.' },
+  { k: 'Print method', v: 'Precision screen-printing with custom dye treatments, cured to survive repeat washing and real wear.' },
+  { k: 'Construction', v: 'Double-stitched seams throughout, reinforced at the shoulder and hem. Custom metal hardware on zips and pulls.' },
+  { k: 'Hallmark', v: 'The four-point compass star on every neck tag, zipper pull and rivet.' },
+  { k: 'Run size', v: 'Strictly limited batches. Once a colourway is marked sold out, it is not reprinted in that exact variation.' },
+  { k: 'Origin', v: 'Designed, produced and hand-inspected in Lagos, Nigeria.' },
+];
+
 export default function AboutPage() {
   return (
     <div>
-        {/* HERO */}
-        <section
-          style={{
-            position: 'relative',
-            padding: '5rem 1.5rem 4rem',
-            borderBottom: '1px solid rgba(9, 10, 14, 0.1)',
-            overflow: 'hidden',
-          }}
-        >
-          {/* Background Ambient Star */}
-          <div
-            style={{
-              position: 'absolute',
-              top: '50%',
-              right: '-5%',
-              transform: 'translateY(-50%)',
-              opacity: 0.04,
-              pointerEvents: 'none',
-            }}
-          >
-            <StarIcon size={450} color="var(--papandu-gold)" />
-          </div>
+      {/* INDEX BAR — the thin metadata strip that opens every editorial page */}
+      <div className="ed-indexbar">
+        <div className="ed-wrap ed-indexbar-inner ed-mono-sm">
+          <span>
+            <span className="ed-accent">[01]</span> The Manifesto
+          </span>
+          <span>Est. Lagos, NG</span>
+          <span>Drop 001 — For The Stars</span>
+          <span>Index / About</span>
+        </div>
+      </div>
 
-          <div style={{ maxWidth: '1080px', margin: '0 auto', position: 'relative', zIndex: 1 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1rem' }}>
-              <StarIcon size={16} color="var(--papandu-red)" />
-              <span
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.9rem',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--papandu-red)',
-                }}
-              >
-                The Manifesto
-              </span>
+      {/* HERO — oversized flush-left statement, small copy pinned right */}
+      <section className="ed-hero">
+        <div className="ed-wrap ed-hero-grid">
+          <h1 className="ed-display ed-rise">
+            Made in
+            <br />
+            Nigeria.
+            <br />
+            <span className="ed-display-alt">Tribe of one.</span>
+          </h1>
+
+          <div className="ed-hero-aside ed-rise ed-rise-2">
+            <div className="ed-mono-sm ed-accent" style={{ marginBottom: '14px' }}>
+              Founding Statement
             </div>
-
-            <h1
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.75rem, 7vw, 5.5rem)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                lineHeight: 0.95,
-                color: 'var(--papandu-black)',
-                marginBottom: '1.75rem',
-              }}
-            >
-              Made in Nigeria.
-              <br />
-              <span style={{ color: 'var(--papandu-red)' }}>Worn by a tribe of one.</span>
-            </h1>
-
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: 'clamp(1.1rem, 2vw, 1.35rem)',
-                color: 'rgba(9, 10, 14, 0.85)',
-                maxWidth: '750px',
-                lineHeight: 1.7,
-              }}
-            >
-              PAPANDU was founded on the belief that true belonging begins with radical self-possession.
-              We do not build uniforms for crowds; we forge garments for the individuals who navigate the noise on their own terms.
+            <p>
+              PAPANDU was founded on the belief that true belonging begins with radical
+              self-possession. We do not build uniforms for crowds; we forge garments for the
+              individuals who navigate the noise on their own terms.
+            </p>
+            <p style={{ marginTop: '1rem' }}>
+              <strong>PAPANDU</strong> stands for personal sovereignty. When everyone is chasing
+              the exact same algorithm, the truest revolution is staying loyal to your own compass.
             </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* EDITORIAL STORY SPLIT */}
-        <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '5rem 1.5rem' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '4rem',
-              alignItems: 'center',
-            }}
-          >
-            {/* Visual Image Collage */}
-            <div style={{ position: 'relative' }}>
-              <div
-                style={{
-                  position: 'relative',
-                  width: '100%',
-                  aspectRatio: '4 / 5',
-                  borderRadius: '8px',
-                  overflow: 'hidden',
-                  border: '1px solid rgba(9, 10, 14, 0.15)',
-                }}
-              >
-                <Image
-                  src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200&auto=format&fit=crop"
-                  alt="Streetwear Culture in Lagos"
-                  fill
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                  style={{ objectFit: 'cover' }}
-                />
-              </div>
+      {/* MARQUEE BAND */}
+      <div className="ed-marquee ed-marquee-red" aria-hidden="true">
+        <div className="ed-marquee-track">
+          {[0, 1].map((dup) => (
+            <div key={dup} style={{ display: 'flex' }}>
+              {Array.from({ length: 6 }).map((_, i) => (
+                <span key={i} className="ed-marquee-item">
+                  Worn by a tribe of one
+                  <StarIcon size={18} color="var(--papandu-gold)" />
+                </span>
+              ))}
+            </div>
+          ))}
+        </div>
+      </div>
 
-              {/* Floating Star Badge Stamp */}
-              <div
-                style={{
-                  position: 'absolute',
-                  bottom: '-25px',
-                  right: '-15px',
-                  backgroundColor: 'var(--papandu-red)',
-                  padding: '1.25rem 1.5rem',
-                  borderRadius: '6px',
-                  border: '1px solid var(--papandu-gold)',
-                  boxShadow: '0 10px 30px rgba(0, 0, 0, 0.6)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.75rem',
-                }}
-              >
-                <StarIcon size={24} color="var(--papandu-gold)" />
-                <div>
-                  <div
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '0.85rem',
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                      color: 'var(--papandu-cream)',
-                    }}
-                  >
-                    Est. Lagos
-                  </div>
-                  <div style={{ fontSize: '0.75rem', color: 'var(--papandu-gold)', fontFamily: 'var(--font-body)' }}>
-                    Original Drop 001
-                  </div>
+      {/* ORIGINS — sticky figure beside flowing copy */}
+      <section className="ed-section">
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <span className="ed-sechead-title">The Origins</span>
+            <span className="ed-mono-sm ed-muted">Fig. 01 / Lagos</span>
+          </div>
+
+          <div className="ed-split">
+            <div className="ed-split-sticky">
+              <figure style={{ margin: 0 }}>
+                <div className="ed-figure">
+                  <Image
+                    src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200&auto=format&fit=crop"
+                    alt="Streetwear culture on the street in Lagos"
+                    fill
+                    sizes="(max-width: 960px) 100vw, 45vw"
+                    style={{ objectFit: 'cover' }}
+                  />
                 </div>
-              </div>
+                <figcaption className="ed-figcaption ed-mono-sm">
+                  <span>Lagos, Nigeria</span>
+                  <span>Original Drop 001</span>
+                </figcaption>
+              </figure>
             </div>
 
-            {/* Narrative Copy */}
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '0.85rem',
-                    letterSpacing: '0.15em',
-                    textTransform: 'uppercase',
-                    color: 'var(--papandu-red)',
-                  }}
-                >
-                  The Origins
-                </span>
-              </div>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2rem, 4vw, 3rem)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.04em',
-                  lineHeight: 1.05,
-                  color: 'var(--papandu-black)',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                Lagos Energy,
-                <br />
-                Global Architecture
-              </h2>
+              <p className="ed-lede" style={{ marginBottom: '2rem' }}>
+                Lagos energy, global architecture.
+              </p>
 
-              <div
-                style={{
-                  fontFamily: 'var(--font-body)',
-                  fontSize: '1rem',
-                  lineHeight: 1.8,
-                  color: 'rgba(9, 10, 14, 0.8)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '1.25rem',
-                }}
-              >
+              <div className="ed-prose">
                 <p>
-                  Born out of the relentless kinetic pulse of Lagos, Nigeria, PAPANDU marries the energy of comic-strip art, graphic maximalism, and African storytelling with the discipline of luxury streetwear construction.
+                  Born out of the relentless kinetic pulse of Lagos, Nigeria, PAPANDU marries the
+                  energy of comic-strip art, graphic maximalism, and African storytelling with the
+                  discipline of luxury streetwear construction.
                 </p>
                 <p>
-                  Every drop is treated as a narrative chapter. We don&apos;t just print garments; we engineer cultural artifacts using heavy 240-460gsm cottons, custom dye treatments, and precision screen-printing that withstands real wear and real life.
-                </p>
-                <p>
-                  The name <strong style={{ color: 'var(--papandu-black)' }}>PAPANDU</strong> stands for personal sovereignty. When everyone is chasing the exact same algorithm, the truest revolution is staying loyal to your own compass.
+                  Every drop is treated as a narrative chapter. We don&apos;t just print garments; we
+                  engineer cultural artifacts using heavy 240–460gsm cottons, custom dye treatments,
+                  and precision screen-printing that withstands real wear and real life.
                 </p>
               </div>
 
-              <div style={{ marginTop: '2rem' }}>
-                <Link
-                  href="/shop"
-                  className="btn-primary"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
-                >
-                  <span>Explore The Garments</span>
-                  <ArrowRight size={15} />
+              <div style={{ marginTop: '2.5rem', maxWidth: '520px' }}>
+                <Link href="/shop" className="ed-bigbtn">
+                  <span>Explore the garments</span>
+                  <ArrowRight size={22} className="ed-bigbtn-arrow" />
                 </Link>
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* THE 3 PILLARS / VALUES */}
-        <section
-          id="mission"
-          style={{
-            backgroundColor: 'var(--papandu-cream)',
-            borderTop: '1px solid rgba(9, 10, 14, 0.1)',
-            borderBottom: '1px solid rgba(9, 10, 14, 0.1)',
-            padding: '5rem 1.5rem',
-          }}
-        >
-          <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
-            <div style={{ textAlign: 'center', maxWidth: '700px', margin: '0 auto 4rem' }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-                <StarIcon size={14} color="var(--papandu-red)" />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '0.85rem',
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color: 'var(--papandu-red)',
-                  }}
-                >
-                  Our Core Creed
-                </span>
-              </div>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'clamp(2rem, 4vw, 3rem)',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--papandu-black)',
-                }}
-              >
-                The Three Pillars
-              </h2>
-            </div>
-
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-                gap: '2rem',
-              }}
-            >
-              {/* Pillar 1 */}
-              <div
-                style={{
-                  padding: '2.5rem 2rem',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(9, 10, 14, 0.08)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(118, 5, 4, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <Compass size={24} color="var(--papandu-red)" />
-                </div>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    color: 'var(--papandu-black)',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  01. Originality
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.7,
-                    color: 'rgba(9, 10, 14, 0.75)',
-                  }}
-                >
-                  No template fashion. We build from blank canvases, sketching graphic narratives and mythic African archetypes that cannot be replicated by trend factories.
-                </p>
-              </div>
-
-              {/* Pillar 2 */}
-              <div
-                style={{
-                  padding: '2.5rem 2rem',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(251, 220, 106, 0.3)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(251, 220, 106, 0.1)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <Flame size={24} color="var(--papandu-red)" />
-                </div>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    color: 'var(--papandu-black)',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  02. Fearless Art
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.7,
-                    color: 'rgba(9, 10, 14, 0.75)',
-                  }}
-                >
-                  Our graphics tell the unfiltered, kinetic reality of Nigerian youth culture — bold comic panels, vintage varsity typography, and raw street poetry.
-                </p>
-              </div>
-
-              {/* Pillar 3 */}
-              <div
-                style={{
-                  padding: '2.5rem 2rem',
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: '8px',
-                  border: '1px solid rgba(9, 10, 14, 0.08)',
-                  position: 'relative',
-                  overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    width: '48px',
-                    height: '48px',
-                    borderRadius: '6px',
-                    backgroundColor: 'rgba(118, 5, 4, 0.2)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    marginBottom: '1.5rem',
-                  }}
-                >
-                  <Shield size={24} color="var(--papandu-red)" />
-                </div>
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.5rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    color: 'var(--papandu-black)',
-                    marginBottom: '0.75rem',
-                  }}
-                >
-                  03. Craftsmanship
-                </h3>
-                <p
-                  style={{
-                    fontFamily: 'var(--font-body)',
-                    fontSize: '0.95rem',
-                    lineHeight: 1.7,
-                    color: 'rgba(9, 10, 14, 0.75)',
-                  }}
-                >
-                  Every piece is tailored with heavyweight textiles, double-stitched seams, custom metal hardware, and hand-inspected in Lagos before it touches your hands.
-                </p>
-              </div>
-            </div>
+      {/* THE CREED — numbered, expandable index */}
+      <section id="mission" className="ed-section" style={{ borderTop: '1px solid var(--ed-rule)' }}>
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <h2>The Creed</h2>
+            <span className="ed-mono-sm ed-muted">Three pillars / Expand to read</span>
           </div>
-        </section>
 
-        {/* THE STAR SYMBOL EXPLANATION */}
-        <section style={{ maxWidth: '1080px', margin: '0 auto', padding: '5rem 1.5rem', textAlign: 'center' }}>
-          <div style={{ marginBottom: '1.5rem' }}>
-            <StarIcon size={64} color="var(--papandu-red)" />
+          <div className="ed-index">
+            {CREED.map((item, i) => (
+              <details key={item.num} className="ed-row" open={i === 0}>
+                <summary>
+                  <span className="ed-rownum">{item.num}</span>
+                  <span>
+                    <span className="ed-rowtitle" style={{ display: 'block' }}>
+                      {item.title}
+                    </span>
+                    <span
+                      className="ed-mono-sm ed-muted"
+                      style={{ display: 'block', marginTop: '8px' }}
+                    >
+                      {item.tag}
+                    </span>
+                  </span>
+                  <span className="ed-toggle" aria-hidden="true" />
+                </summary>
+                <div className="ed-rowbody">
+                  <p>{item.body}</p>
+                </div>
+              </details>
+            ))}
           </div>
+        </div>
+      </section>
+
+      {/* CONSTRUCTION SPEC — flat label/value table */}
+      <section className="ed-section" style={{ borderTop: '1px solid var(--ed-rule)' }}>
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <h2>Construction Spec</h2>
+            <span className="ed-mono-sm ed-muted">How the pieces are actually made</span>
+          </div>
+
+          <dl className="ed-spectable" style={{ margin: 0 }}>
+            {SPEC.map((row) => (
+              <div key={row.k} className="ed-specrow">
+                <dt>{row.k}</dt>
+                <dd>{row.v}</dd>
+              </div>
+            ))}
+          </dl>
+        </div>
+      </section>
+
+      {/* THE STAR — full-bleed dark accent block */}
+      <section className="ed-dark ed-section">
+        <div className="ed-wrap-narrow" style={{ textAlign: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '2rem' }}>
+            <StarIcon size={72} color="var(--papandu-gold)" className="pulse-star" />
+          </div>
+
+          <div className="ed-mono-sm" style={{ color: 'var(--papandu-gold)', marginBottom: '1.25rem' }}>
+            The Hallmark
+          </div>
+
           <h2
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'clamp(2rem, 4.5vw, 3.25rem)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--papandu-black)',
-              marginBottom: '1.25rem',
-            }}
+            className="ed-display"
+            style={{ fontSize: 'clamp(2.2rem, 6.5vw, 5rem)', marginBottom: '1.75rem' }}
           >
-            The Four-Point Compass Star
+            The four-point
+            <br />
+            compass star
           </h2>
+
           <p
             style={{
               fontFamily: 'var(--font-body)',
-              fontSize: '1.1rem',
-              color: 'rgba(9, 10, 14, 0.8)',
+              fontSize: 'clamp(1rem, 1.7vw, 1.15rem)',
               lineHeight: 1.8,
-              maxWidth: '720px',
+              color: 'var(--ed-muted-invert)',
+              maxWidth: '640px',
               margin: '0 auto 2.5rem',
             }}
           >
-            The hallmark on every PAPANDU neck tag, zipper pull, and rivet is our four-point star. It represents the inner compass of the lone wolf: finding your own true north in a world constantly screaming at you to follow the crowd.
+            The hallmark on every PAPANDU neck tag, zipper pull and rivet. It represents the inner
+            compass of the lone wolf: finding your own true north in a world constantly screaming at
+            you to follow the crowd.
           </p>
 
-          <Link
-            href="/shop"
-            className="btn-primary"
-            style={{ display: 'inline-flex', padding: '0.85rem 2rem', fontSize: '0.9rem' }}
-          >
-            Join The Tribe · Shop Drop 001
+          <Link href="/shop" className="btn-gold">
+            Join the tribe · Shop Drop 001
           </Link>
-        </section>
+        </div>
+      </section>
 
-        <Newsletter />
+      <Newsletter />
     </div>
   );
 }
