@@ -1,0 +1,34 @@
+/*
+  PAPANDU design tokens — reconciled from Design Brief V2 + Website Copy
+  + the shipped logo files in public/brand/logos/.
+  See docs/Brand Guidelines - Reconciled.md for the reasoning behind each value.
+
+  Background model (per the Design Brief's own page layouts): the brief's
+  working pages sit on a cream/off-white "paper" canvas, with maroon, navy
+  and gold used as bold accent blocks — not as the page background. Site
+  chrome follows that: --papandu-cream is the default page background,
+  --papandu-black is body/heading text, and --papandu-maroon-dark/--papandu-red/
+  --papandu-navy/--papandu-gold are accent-block and highlight colours.
+*/
+
+:root {
+  /* Core site chrome */
+  --papandu-black: #090A0E;   /* matches papandu-logo-Black.svg — used as text/ink, not page bg */
+  --papandu-red:   #760504;   /* matches papandu-logo-Full Colour.svg; agreed by every source */
+  --papandu-maroon-dark: #420001; /* Design Brief's darkest swatch — headline/accent-block colour */
+  --papandu-gold:  #FBDC6A;   /* highlights, CTAs, NEW/LIMITED tags */
+  --papandu-cream: #E2D9D2;   /* default site background — matches the brief's own page canvas */
+  --papandu-white: #FFFFFF;   /* elevated card/panel surfaces sitting on the cream background */
+
+  /* Campaign / illustration accent — scope to graphic/campaign sections, not core UI */
+  --papandu-navy: #00057D;
+
+  /* Product colourways (Shop data only — do not use as page/UI colours) */
+  --product-hot-pepper: #B12B24;
+  --product-earthy-green: #2C5E1A;
+  --product-nude: #CB9870;
+
+  /* Typography */
+  --font-display: "Girankop Condensed", "Arial Narrow", sans-serif;
+  --font-body: "Merriweather", Georgia, serif;
+}
