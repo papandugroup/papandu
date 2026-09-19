@@ -39,6 +39,7 @@ export default async function HomePage() {
     {
       title: 'TEES',
       status: 'coming-soon' as const,
+      bgColor: '#090A0E', // Current: Black + Gold
     },
     {
       title: 'SHIRTS',
@@ -50,14 +51,17 @@ export default async function HomePage() {
     {
       title: 'HOODIES',
       status: 'coming-soon' as const,
+      bgColor: '#00057D', // Variety A: Navy + Gold
     },
     {
       title: 'BOTTOMS',
       status: 'coming-soon' as const,
+      bgColor: '#380303', // Variety B: Maroon + Gold
     },
     {
       title: 'ACCESSORIES',
       status: 'coming-soon' as const,
+      bgColor: '#760504', // Variety C: Red + Gold
     },
   ];
 
@@ -171,7 +175,7 @@ export default async function HomePage() {
                 style={{
                   position: 'relative',
                   aspectRatio: '3 / 4',
-                  backgroundColor: 'var(--papandu-navy)',
+                  backgroundColor: cat.bgColor || 'var(--papandu-navy)',
                   overflow: 'hidden',
                   display: 'flex',
                   flexDirection: 'column',

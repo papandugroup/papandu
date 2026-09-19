@@ -390,15 +390,15 @@ img {
 }
 
 .coming-soon-tile {
-  transition: background-color var(--transition-fast);
+  transition: transform var(--transition-fast), filter var(--transition-fast);
 }
 
 .coming-soon-tile:hover {
-  background-color: #000455 !important;
+  filter: brightness(1.14);
 }
 
 .coming-soon-tile:hover .pulse-star {
-  transform: scale(1.15);
+  transform: scale(1.18);
 }
 
 /* Footer Responsive Breakpoints */
