@@ -1,24 +1,61 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import StarIcon from '@/components/StarIcon';
-import { Mail, Phone, MapPin, MessageSquare, Send, CheckCircle2, ChevronDown, ChevronUp } from 'lucide-react';
+import Newsletter from '@/components/Newsletter';
+import { ArrowRight, ArrowUpRight, CheckCircle2 } from 'lucide-react';
+
+const CHANNELS = [
+  {
+    num: '01',
+    name: 'WhatsApp',
+    value: '+234 811 121 0706 · Direct studio line',
+    note: 'Fastest',
+    href: 'https://wa.me/2348111210706?text=Hello%20PAPANDU%20Team',
+    external: true,
+  },
+  {
+    num: '02',
+    name: 'Email',
+    value: 'hello@papandu.store · Customer care & orders',
+    note: 'Within 24h',
+    href: 'mailto:hello@papandu.store',
+    external: false,
+  },
+  {
+    num: '03',
+    name: 'The Atelier',
+    value: 'Victoria Island, Lagos, Nigeria',
+    note: 'By appointment',
+    href: null,
+    external: false,
+  },
+];
 
 const FAQS = [
   {
+    num: '01',
     q: 'How do limited drops work?',
+    tag: 'Drops & restocks',
     a: 'Every drop is produced in strictly limited batches here in Nigeria. Once a piece is marked SOLD OUT, it will never be reprinted in the exact same colorway or graphic variation. Newsletter subscribers get secret password access 1 hour prior to general public drops.',
   },
   {
+    num: '02',
     q: 'What are your delivery timelines and fees?',
+    tag: 'Shipping',
     a: 'Lagos orders are dispatched via direct courier within 24 to 48 hours. Delivery is completely free for orders exceeding ₦50,000. Nationwide orders across Nigeria take 2–4 business days. International deliveries are handled via DHL Express (5–7 business days).',
   },
   {
+    num: '03',
     q: 'What payment methods do you accept?',
+    tag: 'Payment',
     a: 'We use Paystack as our certified payment processor. You can securely pay using Nigerian and International Debit/Credit Cards (Mastercard, Visa, Verve), Direct Bank Transfer, USSD, and Apple Pay with automated instant verification.',
   },
   {
+    num: '04',
     q: 'Can I exchange or return an item if the sizing is off?',
+    tag: 'Returns',
     a: 'Yes. We offer 7-day hassle-free size exchanges on unworn items with all original tags, comic cards, and packaging intact. Reach out to us directly on WhatsApp with your order reference number.',
   },
 ];
@@ -31,17 +68,13 @@ export default function ContactPage() {
     message: '',
   });
   const [submitted, setSubmitted] = useState(false);
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formState.name || !formState.email || !formState.message) {
-      alert('Please fill out all required fields.');
-      return;
-    }
 
     // There's no backend mail service wired up yet, so hand the message to
     // the person's own email client instead of silently discarding it.
+    // The three text fields are `required`, so native validation covers empties.
     const mailBody = `Name: ${formState.name}\nEmail: ${formState.email}\nSubject: ${formState.subject}\n\n${formState.message}`;
     const mailtoUrl = `mailto:hello@papandu.store?subject=${encodeURIComponent(
       `[PAPANDU Contact] ${formState.subject}`
@@ -53,508 +86,243 @@ export default function ContactPage() {
 
   return (
     <div>
-        {/* HERO */}
-        <section
-          style={{
-            padding: '4rem 1.5rem 3rem',
-            borderBottom: '1px solid rgba(9, 10, 14, 0.1)',
-            textAlign: 'center',
-          }}
-        >
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.75rem' }}>
-              <StarIcon size={14} color="var(--papandu-red)" />
-              <span
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.2em',
-                  textTransform: 'uppercase',
-                  color: 'var(--papandu-red)',
-                }}
-              >
-                Direct Line
-              </span>
+      {/* INDEX BAR */}
+      <div className="ed-indexbar">
+        <div className="ed-wrap ed-indexbar-inner ed-mono-sm">
+          <span>
+            <span className="ed-accent">[03]</span> Direct Line
+          </span>
+          <span>Victoria Island, Lagos</span>
+          <span>Mon–Sat / 09:00–18:00 WAT</span>
+          <span>hello@papandu.store</span>
+        </div>
+      </div>
+
+      {/* HERO */}
+      <section className="ed-hero">
+        <div className="ed-wrap ed-hero-grid">
+          <h1 className="ed-display ed-rise">
+            Papa
+            <br />
+            <span className="ed-display-alt">awaits you.</span>
+          </h1>
+
+          <div className="ed-hero-aside ed-rise ed-rise-2">
+            <div className="ed-mono-sm ed-accent" style={{ marginBottom: '14px' }}>
+              Reach the studio
             </div>
-            <h1
-              style={{
-                fontFamily: 'var(--font-display)',
-                fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                lineHeight: 0.95,
-                color: 'var(--papandu-black)',
-                marginBottom: '1rem',
-              }}
-            >
-              PAPA Awaits You
-            </h1>
-            <p
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: '1.05rem',
-                color: 'rgba(9, 10, 14, 0.75)',
-                lineHeight: 1.6,
-              }}
-            >
+            <p>
               Need styling advice, order tracking, or want to explore an editorial collaboration?
-              Reach out to our Lagos studio team below.
+              Reach our Lagos studio team on whichever line suits you — WhatsApp is the fastest, and
+              email is answered within a working day.
             </p>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* TWO COLUMN CONTACT SECTION */}
-        <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem' }}>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-              gap: '4rem',
-            }}
-          >
-            {/* LEFT: FORM */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                padding: '2.5rem 2rem',
-                borderRadius: '8px',
-                border: '1px solid rgba(9, 10, 14, 0.12)',
-              }}
-            >
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1.8rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--papandu-black)',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                Send Us A Transmission
-              </h2>
-
-              {submitted ? (
-                <div
-                  style={{
-                    textAlign: 'center',
-                    padding: '3rem 1rem',
-                    backgroundColor: 'rgba(251, 220, 106, 0.05)',
-                    border: '1px solid var(--papandu-gold)',
-                    borderRadius: '6px',
-                  }}
-                >
-                  <CheckCircle2 size={48} color="var(--product-earthy-green)" style={{ margin: '0 auto 1rem' }} />
-                  <h3
-                    style={{
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '1.5rem',
-                      textTransform: 'uppercase',
-                      color: 'var(--papandu-black)',
-                      marginBottom: '0.5rem',
-                    }}
-                  >
-                    Transmission Received
-                  </h3>
-                  <p style={{ fontFamily: 'var(--font-body)', color: 'rgba(9, 10, 14, 0.75)', fontSize: '0.9rem' }}>
-                    Thank you, {formState.name}. Your email app should have opened with your message
-                    ready to send to <strong>hello@papandu.store</strong> — hit send there to reach us.
-                    Didn&apos;t open? Email us directly at{' '}
-                    <strong>hello@papandu.store</strong>.
-                  </p>
-                </div>
-              ) : (
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-                  <div>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.8rem',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      Your Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Tunde Balogun"
-                      value={formState.name}
-                      onChange={(e) => setFormState({ ...formState, name: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.8rem',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="e.g. tunde@example.com"
-                      value={formState.email}
-                      onChange={(e) => setFormState({ ...formState, email: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        outline: 'none',
-                      }}
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.8rem',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      Subject
-                    </label>
-                    <select
-                      value={formState.subject}
-                      onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.85rem',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        outline: 'none',
-                      }}
-                    >
-                      <option value="Order Inquiry">Order Inquiry / Tracking</option>
-                      <option value="Sizing Advice">Sizing & Garment Fit</option>
-                      <option value="Editorial Collab">Creative / Press Collaboration</option>
-                      <option value="Wholesale">Wholesale & Stockist Inquiries</option>
-                      <option value="Other">Other Transmissions</option>
-                    </select>
-                  </div>
-
-                  <div>
-                    <label
-                      style={{
-                        display: 'block',
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.8rem',
-                        letterSpacing: '0.1em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                        marginBottom: '0.5rem',
-                      }}
-                    >
-                      Message *
-                    </label>
-                    <textarea
-                      required
-                      rows={5}
-                      placeholder="Write your thoughts..."
-                      value={formState.message}
-                      onChange={(e) => setFormState({ ...formState, message: e.target.value })}
-                      style={{
-                        width: '100%',
-                        padding: '0.75rem 1rem',
-                        backgroundColor: '#EDE6DC',
-                        border: '1px solid rgba(9, 10, 14, 0.2)',
-                        borderRadius: '4px',
-                        color: 'var(--papandu-black)',
-                        fontFamily: 'var(--font-body)',
-                        fontSize: '0.9rem',
-                        lineHeight: 1.6,
-                        outline: 'none',
-                        resize: 'vertical',
-                      }}
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="btn-primary"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '0.5rem',
-                      padding: '0.85rem',
-                      fontSize: '0.9rem',
-                    }}
-                  >
-                    <Send size={15} />
-                    <span>Send Message</span>
-                  </button>
-                </form>
-              )}
-            </div>
-
-            {/* RIGHT: FAST REACH CHANNELS & STUDIO INFO */}
-            <div>
-              <h2
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1.8rem',
-                  textTransform: 'uppercase',
-                  letterSpacing: '0.05em',
-                  color: 'var(--papandu-black)',
-                  marginBottom: '1.5rem',
-                }}
-              >
-                Studio Contacts
-              </h2>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', marginBottom: '3rem' }}>
-                {/* WhatsApp Direct */}
-                <a
-                  href="https://wa.me/2348111210706?text=Hello%20PAPANDU%20Team"
-                  target="_blank"
-                  rel="noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.25rem',
-                    padding: '1.25rem',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(251, 220, 106, 0.3)',
-                    textDecoration: 'none',
-                    transition: 'all 0.2s ease',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(251, 220, 106, 0.1)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <MessageSquare size={20} color="var(--papandu-red)" />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.95rem',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-red)',
-                      }}
-                    >
-                      Instant WhatsApp Chat
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--papandu-black)', fontFamily: 'var(--font-body)', marginTop: '2px' }}>
-                      +234 811 121 0706 · Direct studio line
-                    </div>
-                  </div>
-                </a>
-
-                {/* Email Direct */}
-                <a
-                  href="mailto:hello@papandu.store"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.25rem',
-                    padding: '1.25rem',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(9, 10, 14, 0.1)',
-                    textDecoration: 'none',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(118, 5, 4, 0.2)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <Mail size={20} color="var(--papandu-red)" />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.95rem',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                      }}
-                    >
-                      Customer Care & Orders
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'rgba(9, 10, 14, 0.7)', fontFamily: 'var(--font-body)', marginTop: '2px' }}>
-                      hello@papandu.store
-                    </div>
-                  </div>
-                </a>
-
-                {/* Studio Location */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '1.25rem',
-                    padding: '1.25rem',
-                    backgroundColor: '#FFFFFF',
-                    borderRadius: '8px',
-                    border: '1px solid rgba(9, 10, 14, 0.1)',
-                  }}
-                >
-                  <div
-                    style={{
-                      width: '44px',
-                      height: '44px',
-                      borderRadius: '50%',
-                      backgroundColor: 'rgba(9, 10, 14, 0.04)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <MapPin size={20} color="var(--papandu-red)" />
-                  </div>
-                  <div>
-                    <div
-                      style={{
-                        fontFamily: 'var(--font-display)',
-                        fontSize: '0.95rem',
-                        letterSpacing: '0.05em',
-                        textTransform: 'uppercase',
-                        color: 'var(--papandu-black)',
-                      }}
-                    >
-                      Lagos Atelier & Headquarters
-                    </div>
-                    <div style={{ fontSize: '0.85rem', color: 'rgba(9, 10, 14, 0.7)', fontFamily: 'var(--font-body)', marginTop: '2px' }}>
-                      Victoria Island, Lagos, Nigeria
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* FAQS SECTION */}
-              <div id="faq">
-                <h3
-                  style={{
-                    fontFamily: 'var(--font-display)',
-                    fontSize: '1.4rem',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.05em',
-                    color: 'var(--papandu-black)',
-                    marginBottom: '1rem',
-                  }}
-                >
-                  Frequently Asked
-                </h3>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                  {FAQS.map((faq, idx) => {
-                    const isOpen = openFaq === idx;
-                    return (
-                      <div
-                        key={idx}
-                        style={{
-                          border: '1px solid rgba(9, 10, 14, 0.1)',
-                          borderRadius: '6px',
-                          overflow: 'hidden',
-                          backgroundColor: '#FFFFFF',
-                        }}
-                      >
-                        <button
-                          onClick={() => setOpenFaq(isOpen ? null : idx)}
-                          style={{
-                            width: '100%',
-                            padding: '1rem 1.25rem',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            background: 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            textAlign: 'left',
-                          }}
-                        >
-                          <span
-                            style={{
-                              fontFamily: 'var(--font-display)',
-                              fontSize: '0.95rem',
-                              color: isOpen ? 'var(--papandu-red)' : 'var(--papandu-black)',
-                              letterSpacing: '0.03em',
-                            }}
-                          >
-                            {faq.q}
-                          </span>
-                          {isOpen ? <ChevronUp size={16} color="var(--papandu-red)" /> : <ChevronDown size={16} color="rgba(9, 10, 14, 0.5)" />}
-                        </button>
-                        {isOpen && (
-                          <div
-                            style={{
-                              padding: '0 1.25rem 1.25rem',
-                              fontFamily: 'var(--font-body)',
-                              fontSize: '0.875rem',
-                              lineHeight: 1.7,
-                              color: 'rgba(9, 10, 14, 0.75)',
-                            }}
-                          >
-                            {faq.a}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
+      {/* CHANNELS — index rows, not cards */}
+      <section className="ed-section-tight" style={{ paddingTop: 'clamp(48px, 6vw, 80px)' }}>
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <h2>Channels</h2>
+            <span className="ed-mono-sm ed-muted">Lagos, Nigeria / WAT</span>
           </div>
-        </section>
+
+          <div className="ed-channels">
+            {CHANNELS.map((c) => {
+              const inner = (
+                <>
+                  <span className="ed-rownum">{c.num}</span>
+                  <span>
+                    <span className="ed-channel-name" style={{ display: 'block' }}>
+                      {c.name}
+                    </span>
+                    <span className="ed-channel-value" style={{ display: 'block', marginTop: '6px' }}>
+                      {c.value}
+                    </span>
+                  </span>
+                  <span
+                    className="ed-mono-sm ed-muted"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+                  >
+                    {c.note}
+                    {c.href ? <ArrowUpRight size={12} /> : null}
+                  </span>
+                </>
+              );
+
+              return c.href ? (
+                <a
+                  key={c.num}
+                  href={c.href}
+                  className="ed-channel"
+                  {...(c.external ? { target: '_blank', rel: 'noreferrer' } : {})}
+                >
+                  {inner}
+                </a>
+              ) : (
+                <div key={c.num} className="ed-channel">
+                  {inner}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* TRANSMISSION FORM */}
+      <section className="ed-section" style={{ borderTop: '1px solid var(--ed-rule)' }}>
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <h2>Send a transmission</h2>
+            <span className="ed-mono-sm ed-muted">All fields marked * are required</span>
+          </div>
+
+          {submitted ? (
+            <div className="ed-notice" style={{ maxWidth: '760px' }}>
+              <CheckCircle2 size={36} color="var(--product-earthy-green)" style={{ marginBottom: '1rem' }} />
+              <h3
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  textTransform: 'uppercase',
+                  fontSize: 'clamp(1.4rem, 3vw, 2rem)',
+                  lineHeight: 1,
+                  marginBottom: '0.9rem',
+                }}
+              >
+                Transmission received
+              </h3>
+              <p
+                style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: '0.98rem',
+                  lineHeight: 1.75,
+                  color: 'rgba(9, 10, 14, 0.75)',
+                }}
+              >
+                Thank you, {formState.name}. Your email app should have opened with your message
+                ready to send to <strong>hello@papandu.store</strong> — hit send there to reach us.
+                Didn&apos;t open? Email us directly at <strong>hello@papandu.store</strong>.
+              </p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="ed-form" style={{ maxWidth: '980px' }}>
+              <div className="ed-field">
+                <label htmlFor="ed-name">
+                  01 — Your name <span className="ed-req">*</span>
+                </label>
+                <input
+                  id="ed-name"
+                  className="ed-input"
+                  type="text"
+                  required
+                  placeholder="e.g. Tunde Balogun"
+                  value={formState.name}
+                  onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                />
+              </div>
+
+              <div className="ed-field">
+                <label htmlFor="ed-email">
+                  02 — Email address <span className="ed-req">*</span>
+                </label>
+                <input
+                  id="ed-email"
+                  className="ed-input"
+                  type="email"
+                  required
+                  placeholder="e.g. tunde@example.com"
+                  value={formState.email}
+                  onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                />
+              </div>
+
+              <div className="ed-field">
+                <label htmlFor="ed-subject">03 — Subject</label>
+                <select
+                  id="ed-subject"
+                  className="ed-input"
+                  value={formState.subject}
+                  onChange={(e) => setFormState({ ...formState, subject: e.target.value })}
+                >
+                  <option value="Order Inquiry">Order Inquiry / Tracking</option>
+                  <option value="Sizing Advice">Sizing &amp; Garment Fit</option>
+                  <option value="Editorial Collab">Creative / Press Collaboration</option>
+                  <option value="Wholesale">Wholesale &amp; Stockist Inquiries</option>
+                  <option value="Other">Other Transmissions</option>
+                </select>
+              </div>
+
+              <div className="ed-field">
+                <label htmlFor="ed-message">
+                  04 — Message <span className="ed-req">*</span>
+                </label>
+                <textarea
+                  id="ed-message"
+                  className="ed-input"
+                  required
+                  rows={5}
+                  placeholder="Write your thoughts..."
+                  value={formState.message}
+                  onChange={(e) => setFormState({ ...formState, message: e.target.value })}
+                />
+              </div>
+
+              <button type="submit" className="ed-bigbtn" style={{ marginTop: '4px' }}>
+                <span>Send message</span>
+                <ArrowRight size={22} className="ed-bigbtn-arrow" />
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* FAQ — full width, expandable */}
+      <section id="faq" className="ed-section" style={{ borderTop: '1px solid var(--ed-rule)' }}>
+        <div className="ed-wrap">
+          <div className="ed-sechead">
+            <h2>Frequently asked</h2>
+            <span className="ed-mono-sm ed-muted">Four questions / Expand to read</span>
+          </div>
+
+          <div className="ed-index">
+            {FAQS.map((faq, i) => (
+              <details key={faq.num} className="ed-row" open={i === 0}>
+                <summary>
+                  <span className="ed-rownum">{faq.num}</span>
+                  <span>
+                    <span className="ed-rowtitle" style={{ display: 'block' }}>
+                      {faq.q}
+                    </span>
+                    <span
+                      className="ed-mono-sm ed-muted"
+                      style={{ display: 'block', marginTop: '8px' }}
+                    >
+                      {faq.tag}
+                    </span>
+                  </span>
+                  <span className="ed-toggle" aria-hidden="true" />
+                </summary>
+                <div className="ed-rowbody">
+                  <p>{faq.a}</p>
+                </div>
+              </details>
+            ))}
+          </div>
+
+          <div style={{ marginTop: 'clamp(36px, 5vw, 56px)', maxWidth: '900px' }}>
+            <Link href="/shop" className="ed-bigbtn">
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '14px' }}>
+                <StarIcon size={18} color="var(--papandu-red)" />
+                Shop Drop 001
+              </span>
+              <ArrowRight size={22} className="ed-bigbtn-arrow" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <Newsletter />
     </div>
   );
 }
