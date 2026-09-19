@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { X, Trash2, Plus, Minus, Lock, ArrowRight, Truck } from 'lucide-react';
 import { useStore } from '@/context/StoreContext';
 import { triggerPaystackCheckout } from '@/lib/paystack';
@@ -187,13 +188,21 @@ export const CartDrawer: React.FC = () => {
               <p style={{ color: '#6B6459', fontSize: '0.9rem', marginBottom: '24px' }}>
                 The latest drop is live. Don't sleep on exclusive pieces.
               </p>
-              <button
+              <Link
+                href="/shop"
                 onClick={closeCart}
                 className="btn-primary"
-                style={{ padding: '10px 20px', fontSize: '0.95rem' }}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  textDecoration: 'none',
+                  padding: '10px 20px',
+                  fontSize: '0.95rem',
+                }}
               >
                 EXPLORE THE DROP
-              </button>
+              </Link>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
