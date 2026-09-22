@@ -13,6 +13,13 @@ interface ProductCardProps {
   product: ProductItem;
 }
 
+function colorwaySlugFromImage(imagePath: string): string {
+  const match =
+    imagePath.match(/papandu-stripe-shirt-(.+?)-(?:tolu|sarah|pamela)-front/) ||
+    imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
+  return match ? match[1] : '';
+}
+
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { formatPrice, addToCart } = useStore();
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
@@ -22,6 +29,11 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isSoldOut = product.status === 'SOLD OUT' || product.stockCount <= 0;
   const isComingSoon = product.status === 'COMING SOON' && !isDropLive();
   const isDisabled = isSoldOut || isComingSoon;
+
+  const colorSlug = colorwaySlugFromImage(product.mainImage);
+  const productHref = colorSlug
+    ? `/shop/${product.slug}?color=${encodeURIComponent(colorSlug)}`
+    : `/shop/${product.slug}`;
 
   const handleQuickAdd = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -48,7 +60,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     >
       {/* Thumbnail Area with Front/Back Flip */}
       <Link
-        href={`/shop/${product.slug}`}
+        href={productHref}
         style={{
           position: 'relative',
           width: '100%',
@@ -146,7 +158,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
       {/* Info & Sizing Area */}
       <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <Link href={`/shop/${product.slug}`}>
+        <Link href={productHref}>
           <h3
             style={{
               fontSize: '1.25rem',

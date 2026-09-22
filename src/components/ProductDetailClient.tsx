@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ProductItem } from '@/data/fallbackProducts';
+import { ProductItem, ProductColorway } from '@/data/fallbackProducts';
 import { useStore } from '@/context/StoreContext';
 import { triggerPaystackCheckout } from '@/lib/paystack';
 import { isDropLive } from '@/lib/dropConfig';
@@ -38,6 +38,28 @@ function colorwaySlugFromImage(imagePath: string): string {
   return match ? match[1] : '';
 }
 
+function normalizeSlug(slug: string): string {
+  return slug.replace(/-(?:tolu|sarah|pamela)$/i, '').toLowerCase().trim();
+}
+
+function findColorwayIndex(colorways: ProductColorway[] | undefined, queryColor: string | null): number {
+  if (!colorways || colorways.length === 0 || !queryColor) return 0;
+  const target = normalizeSlug(queryColor);
+  const rawTarget = queryColor.toLowerCase().trim();
+  const idx = colorways.findIndex((cw) => {
+    const cwCanonical = normalizeSlug(colorwaySlugFromImage(cw.mainImage));
+    const rawMatch = cw.mainImage.match(/papandu-stripe-shirt-(.+?)-front/)?.[1]?.toLowerCase();
+    const nameSlug = cw.name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    return (
+      cwCanonical === target ||
+      rawMatch === rawTarget ||
+      rawMatch === target ||
+      nameSlug === target
+    );
+  });
+  return idx >= 0 ? idx : 0;
+}
+
 export default function ProductDetailClient({
   product,
   relatedProducts,
@@ -47,15 +69,9 @@ export default function ProductDetailClient({
   const hasColorways = Boolean(product.colorways && product.colorways.length > 0);
 
   // Deep-link support: /shop/<slug>?color=<colorway-slug> preselects that colorway,
-  // so shop-grid cards for each colorway can link straight to the right one.
+  // matching both normalized slugs and legacy/model-suffixed query parameters.
   const requestedColorSlug = searchParams.get('color');
-  const initialColorwayIdx = (() => {
-    if (!hasColorways || !requestedColorSlug) return 0;
-    const idx = product.colorways!.findIndex(
-      (cw) => colorwaySlugFromImage(cw.mainImage) === requestedColorSlug
-    );
-    return idx >= 0 ? idx : 0;
-  })();
+  const initialColorwayIdx = findColorwayIndex(product.colorways, requestedColorSlug);
 
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
   const [quantity, setQuantity] = useState<number>(1);
@@ -69,10 +85,27 @@ export default function ProductDetailClient({
     currentColorway ? currentColorway.mainImage : product.mainImage
   );
 
+  // Reactively sync colorway whenever URL searchParams change (card navigation, deep-links, browser back/forward)
+  useEffect(() => {
+    const color = searchParams.get('color');
+    if (!product.colorways || product.colorways.length === 0) return;
+    const matchedIdx = findColorwayIndex(product.colorways, color);
+    setSelectedColorwayIdx(matchedIdx);
+    if (product.colorways[matchedIdx]) {
+      setActiveImage(product.colorways[matchedIdx].mainImage);
+    }
+  }, [searchParams, product.colorways]);
+
   const handleSelectColorway = (idx: number) => {
     setSelectedColorwayIdx(idx);
     if (product.colorways && product.colorways[idx]) {
       setActiveImage(product.colorways[idx].mainImage);
+      const slug = colorwaySlugFromImage(product.colorways[idx].mainImage);
+      if (slug && typeof window !== 'undefined') {
+        const url = new URL(window.location.href);
+        url.searchParams.set('color', slug);
+        window.history.replaceState(null, '', url.toString());
+      }
     }
   };
   const [isCheckingOut, setIsCheckingOut] = useState<boolean>(false);

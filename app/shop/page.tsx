@@ -22,7 +22,9 @@ const CATEGORIES = [
 // (mirrors the same helper in ProductDetailClient.tsx) so a grid card's link and the PDP
 // always agree on which colorway "slug" means.
 function colorwaySlugFromImage(imagePath: string): string {
-  const match = imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
+  const match =
+    imagePath.match(/papandu-stripe-shirt-(.+?)-(?:tolu|sarah|pamela)-front/) ||
+    imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
   return match ? match[1] : '';
 }
 

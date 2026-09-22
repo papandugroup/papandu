@@ -14,24 +14,29 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    src: '/product-images/papandu-duo-sarah-pamela-hero.jpg',
-    alt: 'PAPANDU "For The Stars" Campaign — Sarah & Pamela',
-    objectPosition: 'center 18%',
+    src: '/best-collection-pics/DSC_0114.jpg',
+    alt: 'PAPANDU "For The Stars" Campaign — Editorial Shoot (Tolu & Sarah)',
+    objectPosition: 'center 22%',
   },
   {
-    src: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Charcoal (Model: Tolu)',
-    objectPosition: 'center 12%',
+    src: '/best-collection-pics/DSC_0028.jpg',
+    alt: 'PAPANDU Signature Gingham Detail — Model: Tolu',
+    objectPosition: 'center 20%',
   },
   {
-    src: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Jet Black (Model: Sarah)',
-    objectPosition: 'center 10%',
+    src: '/best-collection-pics/DSC_0198.jpg',
+    alt: 'PAPANDU "For The Stars" Campaign — Model: Sarah',
+    objectPosition: 'center 24%',
   },
   {
-    src: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Burgundy (Model: Pamela)',
-    objectPosition: 'center 14%',
+    src: '/best-collection-pics/DSC_0043-2.jpg',
+    alt: 'PAPANDU Signature Scripture Back Embroidery — "Like The Stars"',
+    objectPosition: 'center 22%',
+  },
+  {
+    src: '/best-collection-pics/DSC_0213.jpg',
+    alt: 'PAPANDU Campaign — "Like The Stars For Ever and Ever"',
+    objectPosition: 'center 28%',
   },
 ];
 
