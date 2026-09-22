@@ -62,7 +62,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
     id: 'prod-for-the-stars',
     title: '"For The Stars" Signature Stripe Shirt',
     slug: 'for-the-stars-signature-stripe-shirt',
-    price: 32000,
+    price: 36800,
     category: 'shirts',
     status: 'COMING SOON',
     isFeatured: true,
@@ -72,6 +72,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Cream / Gold Star',
         colorHex: '#E7DFC7',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -79,6 +80,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Brown & Navy Pinstripe',
         colorHex: '#2E3B52',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-brown-navy-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-brown-navy-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -86,6 +88,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'White & Navy Pinstripe',
         colorHex: '#4A5A78',
+        price: 29800,
         mainImage: '/product-images/papandu-stripe-shirt-white-navy-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-white-navy-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -93,6 +96,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Slate Blue Pinstripe',
         colorHex: '#7C8798',
+        price: 32800,
         mainImage: '/product-images/papandu-stripe-shirt-slate-blue-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-slate-blue-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -100,6 +104,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Cobalt Pinstripe',
         colorHex: '#1F3A6E',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-cobalt-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-cobalt-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -107,6 +112,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Midnight Thin Stripe',
         colorHex: '#16213B',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-midnight-thin-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-midnight-thin-stripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -114,6 +120,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Charcoal Pinstripe',
         colorHex: '#D9D9D6',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -121,6 +128,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Mauve Pinstripe',
         colorHex: '#B87A97',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-mauve-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-mauve-pinstripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -128,6 +136,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Teal & Navy Stripe',
         colorHex: '#1B2F4D',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-teal-navy-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-teal-navy-stripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -135,6 +144,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Emerald Stripe',
         colorHex: '#3FA55A',
+        price: 29800,
         mainImage: '/product-images/papandu-stripe-shirt-emerald-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-emerald-stripe-tolu-back.jpg',
         model: MODEL_PROFILES.Tolu,
@@ -142,6 +152,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Steel Blue Stripe',
         colorHex: '#8B93A0',
+        price: 32800,
         mainImage: '/product-images/papandu-stripe-shirt-steel-blue-stripe-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-steel-blue-stripe-pamela-back.jpg',
         model: MODEL_PROFILES.Pamela,
@@ -149,6 +160,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Powder Blue Stripe',
         colorHex: '#AFCBE0',
+        price: 32800,
         mainImage: '/product-images/papandu-stripe-shirt-powder-blue-stripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-powder-blue-stripe-sarah-back.jpg',
         model: MODEL_PROFILES.Sarah,
@@ -156,6 +168,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Denim Pinstripe',
         colorHex: '#4E6E9E',
+        price: 32800,
         mainImage: '/product-images/papandu-stripe-shirt-denim-pinstripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-denim-pinstripe-sarah-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-denim-pinstripe-sarah-front-alt.jpg',
@@ -164,6 +177,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Burgundy Pinstripe',
         colorHex: '#4A1F35',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-front-alt-closeup.jpg',
@@ -172,6 +186,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Ivory Oversized',
         colorHex: '#D8CBAA',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-ivory-oversized-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-ivory-oversized-pamela-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-ivory-oversized-pamela-front-alt.jpg',
@@ -180,6 +195,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Olive Pinstripe',
         colorHex: '#5C6350',
+        price: 32800,
         mainImage: '/product-images/papandu-stripe-shirt-olive-pinstripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-olive-pinstripe-sarah-back.jpg',
         model: MODEL_PROFILES.Sarah,
@@ -187,6 +203,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Jet Black Pinstripe',
         colorHex: '#1A1A1A',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front-alt.jpg',
@@ -195,6 +212,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Graphite Micro-Check',
         colorHex: '#3B3F42',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-graphite-check-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-graphite-check-pamela-back.jpg',
         model: MODEL_PROFILES.Pamela,
@@ -202,6 +220,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Navy & Burgundy Pinstripe',
         colorHex: '#2A3B63',
+        price: 36800,
         mainImage: '/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-pamela-back.jpg',
         model: MODEL_PROFILES.Pamela,
@@ -209,6 +228,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
       {
         name: 'Sky Blue Gingham',
         colorHex: '#BFDCEE',
+        price: 33800,
         mainImage: '/product-images/papandu-stripe-shirt-sky-gingham-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-sky-gingham-sarah-back.jpg',
         model: MODEL_PROFILES.Sarah,

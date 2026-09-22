@@ -81,6 +81,17 @@ export default function ProductDetailClient({
   const displayColorHex = currentColorway ? currentColorway.colorHex : product.colorHex;
   const displayMainImage = currentColorway ? currentColorway.mainImage : product.mainImage;
   const displaySecondaryImage = currentColorway ? currentColorway.secondaryImage : product.secondaryImage;
+  const activePrice = currentColorway?.price ?? product.price;
+
+  const currentProductItem: ProductItem = {
+    ...product,
+    price: activePrice,
+    colorway: displayColorwayName,
+    colorHex: displayColorHex,
+    mainImage: displayMainImage,
+    secondaryImage: displaySecondaryImage,
+  };
+
   const [activeImage, setActiveImage] = useState<string>(
     currentColorway ? currentColorway.mainImage : product.mainImage
   );
@@ -125,7 +136,7 @@ export default function ProductDetailClient({
   const handleAddToCart = () => {
     if (isPurchaseDisabled) return;
     for (let i = 0; i < quantity; i++) {
-      addToCart(product, selectedSize);
+      addToCart(currentProductItem, selectedSize);
     }
     openCart();
   };
@@ -147,7 +158,7 @@ export default function ProductDetailClient({
     }
 
     setIsCheckingOut(true);
-    const totalAmount = product.price * quantity;
+    const totalAmount = activePrice * quantity;
 
     triggerPaystackCheckout({
       email: checkoutEmail,
@@ -157,7 +168,7 @@ export default function ProductDetailClient({
       amountNGN: totalAmount,
       items: [
         {
-          product,
+          product: currentProductItem,
           size: selectedSize,
           quantity,
         },
@@ -171,7 +182,7 @@ export default function ProductDetailClient({
           totalFormatted: formatPrice(totalAmount),
           items: [
             {
-              product,
+              product: currentProductItem,
               size: selectedSize,
               quantity,
             },
@@ -194,9 +205,9 @@ export default function ProductDetailClient({
                 title: product.title,
                 size: selectedSize,
                 quantity,
-                price: product.price,
-                colorway: product.colorway,
-                image: product.mainImage,
+                price: activePrice,
+                colorway: displayColorwayName,
+                image: displayMainImage,
               },
             ],
           }),
@@ -214,7 +225,7 @@ export default function ProductDetailClient({
     const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
     const shareData = {
       title: `PAPANDU · ${product.title}`,
-      text: `${product.title} — ${displayColorwayName ? displayColorwayName + ' · ' : ''}${formatPrice(product.price)}`,
+      text: `${product.title} — ${displayColorwayName ? displayColorwayName + ' · ' : ''}${formatPrice(activePrice)}`,
       url: shareUrl,
     };
 
@@ -378,7 +389,7 @@ export default function ProductDetailClient({
                 letterSpacing: '0.05em',
               }}
             >
-              {formatPrice(product.price)}
+              {formatPrice(activePrice)}
             </span>
             {product.comparePrice && product.comparePrice > product.price && (
               <span
@@ -640,7 +651,7 @@ export default function ProductDetailClient({
                 ? 'Sold Out'
                 : isComingSoon
                 ? 'Coming Soon'
-                : `Add To Bag · ${formatPrice(product.price * quantity)}`}
+                : `Add To Bag · ${formatPrice(activePrice * quantity)}`}
             </button>
           </div>
 

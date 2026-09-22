@@ -78,10 +78,12 @@ export default async function ProductDetailPage({ params }: Props) {
       name: 'PAPANDU',
     },
     offers: {
-      '@type': 'Offer',
+      '@type': 'AggregateOffer',
       url: `https://papandu.store/shop/${product.slug}`,
       priceCurrency: 'NGN',
-      price: product.price,
+      lowPrice: 29800,
+      highPrice: 36800,
+      offerCount: product.colorways?.length || 1,
       availability:
         product.status === 'SOLD OUT'
           ? 'https://schema.org/SoldOut'

@@ -31,6 +31,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const isDisabled = isSoldOut || isComingSoon;
 
   const colorSlug = colorwaySlugFromImage(product.mainImage);
+  const matchedCw = product.colorways?.find((cw) => cw.mainImage === product.mainImage);
+  const activePrice = matchedCw?.price ?? product.price;
+
   const productHref = colorSlug
     ? `/shop/${product.slug}?color=${encodeURIComponent(colorSlug)}`
     : `/shop/${product.slug}`;
@@ -39,7 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
     e.preventDefault();
     if (isDisabled) return;
 
-    addToCart(product, selectedSize);
+    addToCart({ ...product, price: activePrice }, selectedSize);
     setAddedNotice(true);
     setTimeout(() => setAddedNotice(false), 1400);
   };
@@ -175,7 +178,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {/* Pricing */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '1.05rem', color: 'var(--papandu-black)' }}>
-            {formatPrice(product.price)}
+            {formatPrice(activePrice)}
           </span>
           {product.comparePrice && (
             <span

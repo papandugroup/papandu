@@ -38,6 +38,7 @@ function expandColorways(products: ProductItem[]): ShopDisplayItem[] {
       product.colorways.forEach((cw) => {
         expanded.push({
           ...product,
+          price: cw.price ?? product.price,
           colorway: cw.name,
           colorHex: cw.colorHex,
           mainImage: cw.mainImage,
