@@ -738,15 +738,27 @@ export default function ProductDetailClient({
               marginBottom: '2.5rem',
             }}
           >
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '0.35rem' }}>
+            <Link
+              href="/shipping-policy"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '0.35rem',
+                textDecoration: 'none',
+                color: 'inherit',
+                transition: 'transform 0.15s ease',
+              }}
+            >
               <Truck size={18} color="var(--papandu-red)" />
               <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-display)', letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--papandu-black)' }}>
-                Fast Shipping
+                Fast Shipping ↗
               </span>
               <span style={{ fontSize: '0.7rem', color: 'rgba(9,10,14,0.5)', fontFamily: 'var(--font-body)' }}>
                 Lagos 24-48h · Worldwide
               </span>
-            </div>
+            </Link>
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '0.35rem' }}>
               <ShieldCheck size={18} color="var(--papandu-red)" />
               <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-display)', letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--papandu-black)' }}>
@@ -756,15 +768,27 @@ export default function ProductDetailClient({
                 Numbered Garment
               </span>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: '0.35rem' }}>
+            <Link
+              href="/refund-policy"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                textAlign: 'center',
+                gap: '0.35rem',
+                textDecoration: 'none',
+                color: 'inherit',
+                transition: 'transform 0.15s ease',
+              }}
+            >
               <RotateCcw size={18} color="var(--papandu-red)" />
               <span style={{ fontSize: '0.75rem', fontFamily: 'var(--font-display)', letterSpacing: '0.05em', textTransform: 'uppercase', color: 'var(--papandu-black)' }}>
-                7-Day Exchanges
+                7-Day Exchanges ↗
               </span>
               <span style={{ fontSize: '0.7rem', color: 'rgba(9,10,14,0.5)', fontFamily: 'var(--font-body)' }}>
                 Unworn with tags
               </span>
-            </div>
+            </Link>
           </div>
 
           {/* Description — single flowing block, no tabs */}

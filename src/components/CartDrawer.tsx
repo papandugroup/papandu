@@ -400,6 +400,27 @@ export const CartDrawer: React.FC = () => {
               </button>
 
               <PaymentMethods />
+
+              <p
+                style={{
+                  fontSize: '0.68rem',
+                  color: '#8E8A82',
+                  textAlign: 'center',
+                  marginTop: '12px',
+                  fontFamily: 'var(--font-mono)',
+                  lineHeight: 1.5,
+                }}
+              >
+                Secured by Paystack. By continuing, you agree to our{' '}
+                <Link href="/shipping-policy" onClick={closeCart} style={{ color: 'var(--papandu-black)', textDecoration: 'underline' }}>
+                  Delivery Policy
+                </Link>{' '}
+                and{' '}
+                <Link href="/refund-policy" onClick={closeCart} style={{ color: 'var(--papandu-black)', textDecoration: 'underline' }}>
+                  Refund Terms
+                </Link>
+                .
+              </p>
             </form>
           </div>
         )}

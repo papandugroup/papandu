@@ -124,23 +124,33 @@ export const Footer: React.FC = () => {
           {/* Column 3: Logistics & Trust */}
           <div>
             <h4 style={{ fontSize: '1.1rem', marginBottom: '16px', color: 'var(--papandu-gold)' }}>
-              SUPPORT
+              SUPPORT & POLICIES
             </h4>
             <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <li>
                 <Link href="/contact" style={{ color: '#A29D94', fontSize: '0.9rem' }}>
-                  Contact Us
+                  Contact Studio
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping-policy" style={{ color: '#A29D94', fontSize: '0.9rem' }}>
+                  Delivery &amp; Shipping Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/refund-policy" style={{ color: '#A29D94', fontSize: '0.9rem' }}>
+                  Refund &amp; Returns Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/cancellation-policy" style={{ color: '#A29D94', fontSize: '0.9rem' }}>
+                  Cancellation Policy
                 </Link>
               </li>
               <li>
                 <Link href="/contact#faq" style={{ color: '#A29D94', fontSize: '0.9rem' }}>
-                  Shipping, Returns & Sizing FAQ
+                  Shipping &amp; Sizing FAQ
                 </Link>
-              </li>
-              <li>
-                <span style={{ color: '#656873', fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>
-                  Delivery: West Africa, UK & USA
-                </span>
               </li>
             </ul>
           </div>
@@ -310,6 +320,65 @@ export const Footer: React.FC = () => {
               </div>
             )}
           </div>
+        </div>
+
+        {/* Legal Policies Navigation Row */}
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '18px',
+            paddingTop: '20px',
+            paddingBottom: '16px',
+            borderTop: '1px solid rgba(255, 255, 255, 0.04)',
+          }}
+        >
+          <Link
+            href="/shipping-policy"
+            style={{ color: '#8E8A82', fontSize: '0.78rem', fontFamily: 'var(--font-mono)', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--papandu-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#8E8A82')}
+          >
+            Delivery Policy
+          </Link>
+          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.75rem' }}>·</span>
+          <Link
+            href="/refund-policy"
+            style={{ color: '#8E8A82', fontSize: '0.78rem', fontFamily: 'var(--font-mono)', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--papandu-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#8E8A82')}
+          >
+            Refunds &amp; Returns
+          </Link>
+          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.75rem' }}>·</span>
+          <Link
+            href="/cancellation-policy"
+            style={{ color: '#8E8A82', fontSize: '0.78rem', fontFamily: 'var(--font-mono)', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--papandu-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#8E8A82')}
+          >
+            Cancellation Policy
+          </Link>
+          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.75rem' }}>·</span>
+          <Link
+            href="/terms"
+            style={{ color: '#8E8A82', fontSize: '0.78rem', fontFamily: 'var(--font-mono)', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--papandu-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#8E8A82')}
+          >
+            Terms of Service
+          </Link>
+          <span style={{ color: 'rgba(255,255,255,0.15)', fontSize: '0.75rem' }}>·</span>
+          <Link
+            href="/privacy"
+            style={{ color: '#8E8A82', fontSize: '0.78rem', fontFamily: 'var(--font-mono)', transition: 'color 0.2s' }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--papandu-gold)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = '#8E8A82')}
+          >
+            Privacy Policy
+          </Link>
         </div>
 
         {/* Bottom Bar: Wordmark, Copyright, and Paystack Security */}
