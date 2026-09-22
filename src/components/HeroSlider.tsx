@@ -14,29 +14,24 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    src: '/best-collection-pics/DSC_0114.jpg',
-    alt: 'PAPANDU "For The Stars" Campaign — Editorial Shoot (Tolu & Sarah)',
-    objectPosition: 'center 22%',
-  },
-  {
     src: '/best-collection-pics/DSC_0028.jpg',
-    alt: 'PAPANDU Signature Gingham Detail — Model: Tolu',
+    alt: 'PAPANDU Signature Gingham Detail — Editorial Campaign (Model: Tolu)',
     objectPosition: 'center 20%',
   },
   {
-    src: '/best-collection-pics/DSC_0198.jpg',
-    alt: 'PAPANDU "For The Stars" Campaign — Model: Sarah',
-    objectPosition: 'center 24%',
-  },
-  {
-    src: '/best-collection-pics/DSC_0043-2.jpg',
-    alt: 'PAPANDU Signature Scripture Back Embroidery — "Like The Stars"',
+    src: '/best-collection-pics/DSC_0116.jpg',
+    alt: 'PAPANDU "For The Stars" Editorial Campaign Shoot',
     objectPosition: 'center 22%',
   },
   {
-    src: '/best-collection-pics/DSC_0213.jpg',
-    alt: 'PAPANDU Campaign — "Like The Stars For Ever and Ever"',
-    objectPosition: 'center 28%',
+    src: '/best-collection-pics/DSC_0132.jpg',
+    alt: 'PAPANDU "For The Stars" Editorial Campaign Shoot',
+    objectPosition: 'center 20%',
+  },
+  {
+    src: '/best-collection-pics/DSC_0164.jpg',
+    alt: 'PAPANDU "For The Stars" Editorial Campaign Shoot',
+    objectPosition: 'center center',
   },
 ];
 
