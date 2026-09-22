@@ -10,6 +10,23 @@ export const metadata: Metadata = {
   title: 'Our Story & Brand Philosophy | PAPANDU Store',
   description:
     'Made in Nigeria. Worn by a tribe of one. Discover the story, mission, and craftsmanship behind PAPANDU streetwear.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'Our Story & Brand Philosophy — PAPANDU',
+    description:
+      'Made in Nigeria. Worn by a tribe of one. Discover the story, mission, and craftsmanship behind PAPANDU streetwear.',
+    url: 'https://papandu.store/about',
+    images: ['/brand/papandu-store.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Our Story & Brand Philosophy — PAPANDU',
+    description:
+      'Made in Nigeria. Worn by a tribe of one. Discover the story, mission, and craftsmanship behind PAPANDU streetwear.',
+    images: ['/brand/papandu-store.jpg'],
+  },
 };
 
 /* The three pillars, as an expandable index rather than three cards. Each one

@@ -9,6 +9,23 @@ export const metadata: Metadata = {
   title: 'The Tribe Wall | PAPANDU Store',
   description:
     'Real fits from real people. Tag #PapanduTribe or @papandu.star to claim your slot on the PAPANDU community wall.',
+  alternates: {
+    canonical: '/community',
+  },
+  openGraph: {
+    title: 'The Tribe Wall — PAPANDU Community',
+    description:
+      'Real fits from real people. Tag #PapanduTribe or @papandu.star to claim your slot on the PAPANDU community wall.',
+    url: 'https://papandu.store/community',
+    images: ['/brand/papandu-store.jpg'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'The Tribe Wall — PAPANDU Community',
+    description:
+      'Real fits from real people. Tag #PapanduTribe or @papandu.star to claim your slot on the PAPANDU community wall.',
+    images: ['/brand/papandu-store.jpg'],
+  },
 };
 
 /* The wall is genuinely empty until Drop 001 ships, so rather than inventing
