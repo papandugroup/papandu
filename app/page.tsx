@@ -18,7 +18,9 @@ export default async function HomePage() {
   // placeholder items an isFeatured slice would otherwise pull in.
   const signatureShirt = products.find((p) => p.slug === 'for-the-stars-signature-stripe-shirt');
   const colorwaySlugFromImage = (imagePath: string) => {
-    const match = imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
+    const match =
+      imagePath.match(/papandu-stripe-shirt-(.+?)-(?:tolu|sarah|pamela)-front/) ||
+      imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
     return match ? match[1] : '';
   };
   const signatureHeroColorSlug = signatureShirt ? colorwaySlugFromImage(signatureShirt.mainImage) : '';
@@ -46,7 +48,7 @@ export default async function HomePage() {
       status: 'live' as const,
       count: '1 PIECE',
       href: '/shop?category=shirts',
-      image: '/product-images/papandu-stripe-shirt-cream-star-front.jpg',
+      image: '/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
     },
     {
       title: 'HOODIES',
@@ -214,7 +216,7 @@ export default async function HomePage() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
           <div style={{ position: 'relative', aspectRatio: '4 / 5' }}>
             <Image
-              src="/product-images/papandu-stripe-shirt-jet-black-pinstripe-front-alt.jpg"
+              src="/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front-alt.jpg"
               alt={'PAPANDU "For The Stars" Signature Stripe Shirt — Jet Black'}
               fill
               style={{ objectFit: 'cover' }}
@@ -222,7 +224,7 @@ export default async function HomePage() {
           </div>
           <div style={{ position: 'relative', aspectRatio: '4 / 5' }}>
             <Image
-              src="/product-images/papandu-stripe-shirt-midnight-thin-stripe-back.jpg"
+              src="/product-images/papandu-stripe-shirt-midnight-thin-stripe-tolu-back.jpg"
               alt={'PAPANDU "For The Stars" Signature Stripe Shirt — Midnight Thin Stripe'}
               fill
               style={{ objectFit: 'cover' }}
@@ -372,7 +374,7 @@ export default async function HomePage() {
       {/* 7. COLLECTION / CONCEPT: Full-Bleed Editorial Photo */}
       <section style={{ position: 'relative', minHeight: '86vh', overflow: 'hidden' }}>
         <Image
-          src="/product-images/papandu-stripe-shirt-charcoal-pinstripe-front.jpg"
+          src="/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-front.jpg"
           alt={'PAPANDU "For The Stars" Signature Stripe Shirt — Charcoal, editorial detail'}
           fill
           style={{ objectFit: 'cover', objectPosition: 'center 20%' }}

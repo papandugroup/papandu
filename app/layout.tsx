@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     siteName: 'PAPANDU',
     images: [
       {
-        url: 'https://papandu.store/product-images/papandu-stripe-shirt-cream-star-front.jpg',
+        url: 'https://papandu.store/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
         width: 1200,
         height: 630,
         alt: 'PAPANDU Streetwear',

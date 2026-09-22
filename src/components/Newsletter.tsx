@@ -32,7 +32,7 @@ export const Newsletter: React.FC = () => {
     >
       {/* Full-Bleed Background Photograph (Olaf pattern: photo split by a centered content card) */}
       <Image
-        src="/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-front.jpg"
+        src="/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-pamela-front.jpg"
         alt="PAPANDU tribe, Signature Stripe Shirt"
         fill
         style={{ objectFit: 'cover' }}

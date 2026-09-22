@@ -32,7 +32,9 @@ interface ProductDetailClientProps {
 // a URL-friendly slug straight from the image path so the shop grid and this page always agree,
 // without needing a separate slug field on each colorway.
 function colorwaySlugFromImage(imagePath: string): string {
-  const match = imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
+  const match =
+    imagePath.match(/papandu-stripe-shirt-(.+?)-(?:tolu|sarah|pamela)-front/) ||
+    imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
   return match ? match[1] : '';
 }
 
@@ -434,6 +436,32 @@ export default function ProductDetailClient({
                     border: '1px solid rgba(9,10,14,0.2)',
                   }}
                 />
+              </div>
+            )}
+
+            {/* Model Fit Badge for Active Colorway */}
+            {currentColorway?.model && (
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  marginTop: '12px',
+                  padding: '8px 12px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: '4px',
+                  border: '1px solid rgba(9, 10, 14, 0.12)',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
+                  fontSize: '0.78rem',
+                  fontFamily: 'var(--font-mono)',
+                  color: 'rgba(9, 10, 14, 0.85)',
+                  flexWrap: 'wrap',
+                }}
+              >
+                <span style={{ color: 'var(--papandu-red)', fontWeight: 700 }}>● MODEL FIT:</span>
+                <span>
+                  <strong>{currentColorway.model.name}</strong> ({currentColorway.model.height} · {currentColorway.model.weight}) is wearing Size <strong>{currentColorway.model.sizeWorn}</strong>
+                </span>
               </div>
             )}
           </div>
@@ -983,6 +1011,59 @@ export default function ProductDetailClient({
                   ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Model Cast & Sizing Reference (From Shoot) */}
+            <div
+              style={{
+                backgroundColor: '#121319',
+                border: '1px solid #282A32',
+                borderRadius: '4px',
+                padding: '16px',
+                marginBottom: '22px',
+              }}
+            >
+              <h4
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'var(--papandu-gold)',
+                  marginBottom: '10px',
+                }}
+              >
+                Campaign Shoot Model Profiles:
+              </h4>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                  gap: '12px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.78rem',
+                  color: '#ECE8E1',
+                }}
+              >
+                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
+                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Tolu (Male)</strong>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 6’3”</span>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 70 kg</span>
+                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size XL</span>
+                </div>
+                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
+                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Sarah (Slim Female)</strong>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 170 cm (5’7”)</span>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 53 kg</span>
+                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size M</span>
+                </div>
+                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
+                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Pamela (Plus-Size)</strong>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 5’8”</span>
+                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 100 kg</span>
+                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size XXL</span>
+                </div>
+              </div>
             </div>
 
             {/* Sizing Assistance & Action */}

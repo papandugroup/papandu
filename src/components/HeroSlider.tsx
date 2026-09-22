@@ -14,19 +14,24 @@ interface Slide {
 
 const slides: Slide[] = [
   {
-    src: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Charcoal',
+    src: '/product-images/papandu-duo-sarah-pamela-hero.jpg',
+    alt: 'PAPANDU "For The Stars" Campaign — Sarah & Pamela',
+    objectPosition: 'center 18%',
+  },
+  {
+    src: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-front.jpg',
+    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Charcoal (Model: Tolu)',
     objectPosition: 'center 12%',
   },
   {
-    src: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Jet Black',
+    src: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front.jpg',
+    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Jet Black (Model: Sarah)',
     objectPosition: 'center 10%',
   },
   {
-    src: '/product-images/papandu-stripe-shirt-powder-blue-stripe-front.jpg',
-    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Powder Blue',
-    objectPosition: 'center 12%',
+    src: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-front.jpg',
+    alt: 'PAPANDU "For The Stars" Signature Stripe Shirt — Burgundy (Model: Pamela)',
+    objectPosition: 'center 14%',
   },
 ];
 
