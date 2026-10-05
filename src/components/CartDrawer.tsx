@@ -45,7 +45,7 @@ export const CartDrawer: React.FC = () => {
     setFormError('');
 
     if (!customerEmail || !customerEmail.includes('@')) {
-      setFormError('Please provide a valid email address for your Paystack receipt.');
+      setFormError('Please provide a valid email address for your receipt.');
       return;
     }
     if (!customerName.trim()) {
@@ -344,7 +344,7 @@ export const CartDrawer: React.FC = () => {
                 />
                 <input
                   type="email"
-                  placeholder="Email Address (for Paystack receipt) *"
+                  placeholder="Email Address (for receipt) *"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                   className="checkout-input"
@@ -374,7 +374,7 @@ export const CartDrawer: React.FC = () => {
                 </span>
               </div>
 
-              {/* Paystack Pay Button */}
+              {/* Checkout Pay Button */}
               <button
                 type="submit"
                 disabled={isProcessing}
@@ -389,11 +389,11 @@ export const CartDrawer: React.FC = () => {
                 }}
               >
                 {isProcessing ? (
-                  <span>LAUNCHING PAYSTACK...</span>
+                  <span>PROCESSING CHECKOUT...</span>
                 ) : (
                   <>
                     <Lock size={16} color="#FBDC6A" />
-                    <span>PAY WITH PAYSTACK</span>
+                    <span>PROCEED TO CHECKOUT</span>
                     <ArrowRight size={18} color="#FBDC6A" />
                   </>
                 )}
@@ -411,7 +411,7 @@ export const CartDrawer: React.FC = () => {
                   lineHeight: 1.5,
                 }}
               >
-                Secured by Paystack. By continuing, you agree to our{' '}
+                Guaranteed safe & secure checkout. By continuing, you agree to our{' '}
                 <Link href="/shipping-policy" onClick={closeCart} style={{ color: 'var(--papandu-black)', textDecoration: 'underline' }}>
                   Delivery Policy
                 </Link>{' '}

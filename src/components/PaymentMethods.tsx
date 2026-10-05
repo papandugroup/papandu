@@ -20,6 +20,7 @@ const PAYMENT_METHODS: PaymentMethod[] = [
   // so it shouldn't be inset inside the tile.
   { kind: 'mark', label: 'Visa', src: '/payment/visa.svg', fills: true },
   { kind: 'mark', label: 'Mastercard', src: '/payment/mastercard.svg', fills: true },
+  { kind: 'mark', label: 'Verve', src: '/payment/verve.svg', fills: true },
   { kind: 'mark', label: 'Apple Pay', src: '/payment/apple-pay.svg', fills: false },
   { kind: 'icon', label: 'Bank transfer', Icon: Landmark },
   { kind: 'icon', label: 'USSD', Icon: Smartphone },
@@ -53,7 +54,7 @@ export const PaymentMethods: React.FC = () => {
         ))}
       </ul>
 
-      <span className="pay-note">Secured by Paystack · Verve cards accepted</span>
+      <span className="pay-note">256-bit encrypted checkout · All cards accepted</span>
     </div>
   );
 };

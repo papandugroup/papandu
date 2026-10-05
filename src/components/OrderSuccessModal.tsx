@@ -67,7 +67,7 @@ export const OrderSuccessModal: React.FC = () => {
         </h2>
 
         <p style={{ color: 'var(--papandu-red)', fontFamily: 'var(--font-mono)', fontSize: '0.85rem', marginBottom: '16px' }}>
-          PAYMENT VERIFIED VIA PAYSTACK
+          PAYMENT VERIFIED & CONFIRMED
         </p>
 
         <p style={{ color: '#2B2620', fontSize: '0.95rem', lineHeight: 1.6, marginBottom: '24px' }}>

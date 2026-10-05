@@ -54,14 +54,28 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   // Free shipping in Lagos on orders over ₦50,000
   const freeShippingThresholdNGN = 50000;
 
-  // Hydrate cart and currency from localStorage
+  // Hydrate cart and currency from localStorage or auto-detect on first visit
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem('papandu_cart');
       if (savedCart) setCart(JSON.parse(savedCart));
 
       const savedCurrency = localStorage.getItem('papandu_currency') as CurrencyType;
-      if (savedCurrency && RATES[savedCurrency]) setCurrencyState(savedCurrency);
+      if (savedCurrency && RATES[savedCurrency]) {
+        setCurrencyState(savedCurrency);
+      } else {
+        // Auto-detect visitor currency based on location on first visit
+        fetch('/api/geolocation')
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.currency && RATES[data.currency as CurrencyType]) {
+              setCurrencyState(data.currency as CurrencyType);
+            }
+          })
+          .catch(() => {
+            // Keep default 'NGN' gracefully
+          });
+      }
     } catch (e) {
       console.warn('Could not read from localStorage');
     }

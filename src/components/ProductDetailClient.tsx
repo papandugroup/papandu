@@ -555,8 +555,9 @@ export default function ProductDetailClient({
                     onClick={() => setSelectedSize(size)}
                     disabled={isPurchaseDisabled}
                     style={{
-                      width: '52px',
+                      minWidth: '52px',
                       height: '52px',
+                      padding: '0 10px',
                       borderRadius: '4px',
                       border: isSelected
                         ? '2px solid var(--papandu-gold)'
@@ -680,10 +681,10 @@ export default function ProductDetailClient({
                 }}
               >
                 <Lock size={15} />
-                <span>Instant Checkout with Paystack</span>
+                <span>INSTANT CHECKOUT</span>
               </button>
 
-              {/* Email Prompt Modal/Dropdown for Direct Paystack */}
+              {/* Email Prompt Modal/Dropdown for Direct Checkout */}
               {showEmailPrompt && (
                 <div
                   style={{
@@ -748,7 +749,7 @@ export default function ProductDetailClient({
                     className="btn-primary"
                     style={{ width: '100%', padding: '0.75rem', fontSize: '0.85rem' }}
                   >
-                    {isCheckingOut ? 'Opening...' : 'Pay'}
+                    {isCheckingOut ? 'Processing...' : 'PROCEED TO PAYMENT'}
                   </button>
                 </div>
               )}
@@ -952,15 +953,15 @@ export default function ProductDetailClient({
           <div
             onClick={(e) => e.stopPropagation()}
             style={{
-              backgroundColor: '#0F1014',
-              border: '1px solid #282A32',
+              backgroundColor: '#FFFFFF',
+              border: '1px solid rgba(9, 10, 14, 0.12)',
               borderRadius: '6px',
               maxWidth: '560px',
               width: '100%',
               padding: '32px 28px',
-              boxShadow: '0 25px 60px rgba(0, 0, 0, 0.75)',
+              boxShadow: '0 25px 70px rgba(0, 0, 0, 0.35)',
               position: 'relative',
-              color: '#ECE8E1',
+              color: 'var(--papandu-black)',
             }}
           >
             {/* Close Button */}
@@ -971,48 +972,48 @@ export default function ProductDetailClient({
                 position: 'absolute',
                 top: '20px',
                 right: '20px',
-                background: 'rgba(255, 255, 255, 0.06)',
-                border: '1px solid rgba(255, 255, 255, 0.1)',
+                background: 'rgba(9, 10, 14, 0.05)',
+                border: '1px solid rgba(9, 10, 14, 0.1)',
                 borderRadius: '50%',
                 width: '34px',
                 height: '34px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#ECE8E1',
+                color: 'var(--papandu-black)',
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.15)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.06)')}
+              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(9, 10, 14, 0.12)')}
+              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(9, 10, 14, 0.05)')}
             >
               <X size={18} />
             </button>
 
             {/* Header Badge */}
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <StarIcon size={14} color="#FBDC6A" />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.15em', color: '#FBDC6A', textTransform: 'uppercase' }}>
+              <StarIcon size={14} color="var(--papandu-red)" />
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.15em', color: 'var(--papandu-red)', fontWeight: 700, textTransform: 'uppercase' }}>
                 FIT & MEASUREMENTS
               </span>
             </div>
 
             {/* Modal Title */}
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: '#FFFFFF', letterSpacing: '0.04em', margin: '0 0 16px', lineHeight: 1.1 }}>
+            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--papandu-black)', letterSpacing: '0.04em', margin: '0 0 16px', lineHeight: 1.1 }}>
               BOXY STREETWEAR SILHOUETTE
             </h3>
 
             {/* Brand recommendation highlight box */}
             <div
               style={{
-                backgroundColor: 'rgba(118, 5, 4, 0.15)',
+                backgroundColor: 'rgba(118, 5, 4, 0.06)',
                 borderLeft: '3px solid var(--papandu-red)',
                 padding: '14px 16px',
                 borderRadius: '2px',
                 marginBottom: '22px',
               }}
             >
-              <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: '#ECE8E1', fontFamily: 'var(--font-body)' }}>
+              <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: '#2B2620', fontFamily: 'var(--font-body)' }}>
                 <strong>Boxy Streetwear Fit:</strong> We recommend your standard size for a relaxed drop-shoulder silhouette. Size up for an extreme oversized drape.
               </p>
             </div>
@@ -1021,36 +1022,37 @@ export default function ProductDetailClient({
             <div style={{ overflowX: 'auto', marginBottom: '22px' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #282A32', color: '#8E8A82' }}>
-                    <th style={{ padding: '10px 8px', fontWeight: 600 }}>SIZE</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 600 }}>CHEST</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 600 }}>LENGTH</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 600 }}>SHOULDER</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 600 }}>RECOMMENDED</th>
+                  <tr style={{ borderBottom: '1px solid rgba(9, 10, 14, 0.12)', color: '#6B6459' }}>
+                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>SIZE</th>
+                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>CHEST</th>
+                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>LENGTH</th>
+                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>SHOULDER</th>
+                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>RECOMMENDED</th>
                   </tr>
                 </thead>
-                <tbody style={{ color: '#D4CFC7' }}>
+                <tbody style={{ color: '#2B2620' }}>
                   {[
                     { size: 'S', chest: '42"', length: '28"', shoulder: '20"', fit: '5\'4" – 5\'8"' },
                     { size: 'M', chest: '45"', length: '29"', shoulder: '21"', fit: '5\'8" – 5\'11"' },
                     { size: 'L', chest: '48"', length: '30"', shoulder: '22"', fit: '5\'11" – 6\'2"' },
                     { size: 'XL', chest: '51"', length: '31"', shoulder: '23"', fit: '6\'1" – 6\'4"' },
                     { size: 'XXL', chest: '54"', length: '32"', shoulder: '24"', fit: '6\'3"+' },
+                    { size: 'XXXL', chest: '57"', length: '33"', shoulder: '25"', fit: '6\'4"+ / Oversized' },
                   ].map((row) => (
                     <tr
                       key={row.size}
                       style={{
-                        borderBottom: '1px solid #1C1D24',
-                        backgroundColor: selectedSize === row.size ? 'rgba(251, 220, 106, 0.08)' : 'transparent',
+                        borderBottom: '1px solid rgba(9, 10, 14, 0.08)',
+                        backgroundColor: selectedSize === row.size ? 'rgba(251, 220, 106, 0.25)' : 'transparent',
                       }}
                     >
-                      <td style={{ padding: '10px 8px', fontWeight: 700, color: selectedSize === row.size ? '#FBDC6A' : '#FFFFFF' }}>
+                      <td style={{ padding: '10px 8px', fontWeight: 700, color: selectedSize === row.size ? 'var(--papandu-red)' : 'var(--papandu-black)' }}>
                         {row.size} {selectedSize === row.size && '•'}
                       </td>
                       <td style={{ padding: '10px 8px' }}>{row.chest}</td>
                       <td style={{ padding: '10px 8px' }}>{row.length}</td>
                       <td style={{ padding: '10px 8px' }}>{row.shoulder}</td>
-                      <td style={{ padding: '10px 8px', color: '#A29D94' }}>{row.fit}</td>
+                      <td style={{ padding: '10px 8px', color: '#6B6459' }}>{row.fit}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -1060,8 +1062,8 @@ export default function ProductDetailClient({
             {/* Model Cast & Sizing Reference (From Shoot) */}
             <div
               style={{
-                backgroundColor: '#121319',
-                border: '1px solid #282A32',
+                backgroundColor: '#F8F6F0',
+                border: '1px solid rgba(9, 10, 14, 0.08)',
                 borderRadius: '4px',
                 padding: '16px',
                 marginBottom: '22px',
@@ -1073,7 +1075,7 @@ export default function ProductDetailClient({
                   fontSize: '0.85rem',
                   letterSpacing: '0.1em',
                   textTransform: 'uppercase',
-                  color: 'var(--papandu-gold)',
+                  color: 'var(--papandu-black)',
                   marginBottom: '10px',
                 }}
               >
@@ -1086,32 +1088,32 @@ export default function ProductDetailClient({
                   gap: '12px',
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.78rem',
-                  color: '#ECE8E1',
+                  color: '#2B2620',
                 }}
               >
-                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
-                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Tolu (Male)</strong>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 6’3”</span>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 70 kg</span>
-                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size XL</span>
+                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Tolu (Male)</strong>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 6’3”</span>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 70 kg</span>
+                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size M · Size L (Cream Star)</span>
                 </div>
-                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
-                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Sarah (Slim Female)</strong>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 170 cm (5’7”)</span>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 53 kg</span>
-                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size M</span>
+                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Sarah (Slim Female)</strong>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 170 cm (5’7”)</span>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 53 kg</span>
+                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size M · Medium (Slim Fit)</span>
                 </div>
-                <div style={{ backgroundColor: '#1A1C24', padding: '10px 12px', borderRadius: '3px' }}>
-                  <strong style={{ color: '#FBDC6A', display: 'block', marginBottom: '4px' }}>Pamela (Plus-Size)</strong>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Height: 5’8”</span>
-                  <span style={{ color: '#A29D94', display: 'block' }}>Weight: 100 kg</span>
-                  <span style={{ color: '#FFF', display: 'block', marginTop: '4px' }}>Wears: Size XXL</span>
+                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
+                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Pamela (Plus-Size)</strong>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 5’8”</span>
+                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 100 kg</span>
+                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size XL · XXXL (Ivory Oversized)</span>
                 </div>
               </div>
             </div>
 
             {/* Sizing Assistance & Action */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', borderTop: '1px solid #22232B', paddingTop: '18px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', borderTop: '1px solid rgba(9, 10, 14, 0.08)', paddingTop: '18px' }}>
               <a
                 href="https://wa.me/2348111210706?text=Hello%20Papandu,%20I%20have%20a%20question%20about%20sizing%20for%20the%20Signature%20Stripe%20Shirt"
                 target="_blank"
@@ -1119,11 +1121,12 @@ export default function ProductDetailClient({
                 style={{
                   fontFamily: 'var(--font-mono)',
                   fontSize: '0.78rem',
-                  color: '#FBDC6A',
+                  color: 'var(--papandu-black)',
                   textDecoration: 'underline',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
+                  fontWeight: 600,
                 }}
               >
                 <span>Still unsure? Ask stylist on WhatsApp ↗</span>

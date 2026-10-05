@@ -407,9 +407,71 @@ export const Footer: React.FC = () => {
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#A29D94', fontSize: '0.75rem', fontFamily: 'var(--font-mono)' }}>
-            <ShieldCheck size={16} color="#FBDC6A" />
-            <span>PAYSTACK SECURED GATEWAY · VISA · MASTERCARD · VERVE</span>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '14px',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                color: '#A29D94',
+                fontSize: '0.75rem',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              <ShieldCheck size={16} color="#FBDC6A" />
+              <span>ENCRYPTED SECURE CHECKOUT</span>
+            </div>
+
+            {/* Payment Method Actual Logos */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {[
+                { name: 'Visa', src: '/payment/visa.svg' },
+                { name: 'Mastercard', src: '/payment/mastercard.svg' },
+                { name: 'Verve', src: '/payment/verve.svg' },
+                { name: 'Apple Pay', src: '/payment/apple-pay.svg' },
+              ].map((logo) => (
+                <div
+                  key={logo.name}
+                  title={logo.name}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    borderRadius: '3px',
+                    overflow: 'hidden',
+                    border: '1px solid rgba(255, 255, 255, 0.15)',
+                    backgroundColor: 'rgba(255, 255, 255, 0.04)',
+                    padding: '2px 4px',
+                    height: '24px',
+                    width: '38px',
+                    boxShadow: '0 1px 3px rgba(0,0,0,0.4)',
+                  }}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={logo.src}
+                    alt={logo.name}
+                    width={34}
+                    height={20}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      objectFit: 'contain',
+                      borderRadius: '2px',
+                    }}
+                    decoding="async"
+                  />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
