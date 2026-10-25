@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ProductItem, ProductColorway } from '@/data/fallbackProducts';
+import { ProductItem, ProductColorway, isProductOneOfOne, getInventoryKey } from '@/data/fallbackProducts';
 import { useStore } from '@/context/StoreContext';
 import { triggerPaystackCheckout } from '@/lib/paystack';
 import { isDropLive } from '@/lib/dropConfig';
@@ -64,7 +64,8 @@ export default function ProductDetailClient({
   product,
   relatedProducts,
 }: ProductDetailClientProps) {
-  const { addToCart, formatPrice, openCart, setOrderSuccess } = useStore();
+  const { addToCart, formatPrice, openCart, setOrderSuccess, isItemSoldOut, refreshInventory } = useStore();
+
   const searchParams = useSearchParams();
   const hasColorways = Boolean(product.colorways && product.colorways.length > 0);
 
@@ -73,7 +74,6 @@ export default function ProductDetailClient({
   const requestedColorSlug = searchParams.get('color');
   const initialColorwayIdx = findColorwayIndex(product.colorways, requestedColorSlug);
 
-  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedColorwayIdx, setSelectedColorwayIdx] = useState<number>(initialColorwayIdx);
   const currentColorway = hasColorways ? product.colorways![selectedColorwayIdx] : null;
@@ -82,6 +82,12 @@ export default function ProductDetailClient({
   const displayMainImage = currentColorway ? currentColorway.mainImage : product.mainImage;
   const displaySecondaryImage = currentColorway ? currentColorway.secondaryImage : product.secondaryImage;
   const activePrice = currentColorway?.price ?? product.price;
+
+  // Use colorway's single size (model's size)
+  const selectedSize = currentColorway?.size || product.sizes[0] || 'M';
+
+  // Determine if this product/colorway uses 1-of-1 archive inventory
+  const isOneOfOne = isProductOneOfOne(product, displayColorwayName);
 
   const currentProductItem: ProductItem = {
     ...product,
@@ -126,18 +132,23 @@ export default function ProductDetailClient({
   const [checkoutAddress, setCheckoutAddress] = useState<string>('');
   const [showEmailPrompt, setShowEmailPrompt] = useState<boolean>(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [showSizingModal, setShowSizingModal] = useState<boolean>(false);
   const [linkCopied, setLinkCopied] = useState<boolean>(false);
 
-  const isSoldOut = product.status === 'SOLD OUT' || product.stockCount === 0;
+  // Check both static status AND real-time per-colorway inventory
+  const inventorySoldOut = isItemSoldOut(product.slug, displayColorwayName);
+  const isSoldOut = product.status === 'SOLD OUT' || product.stockCount === 0 || inventorySoldOut;
   const isComingSoon = product.status === 'COMING SOON' && !isDropLive();
   const isPurchaseDisabled = isSoldOut || isComingSoon;
 
+  // For 1-of-1 items, quantity is always locked to 1
+  // For standard items, cap at maxPerOrder (default 5) or stockCount
+  const maxPerOrder = product.maxPerOrder || 5;
+  const maxQuantity = Math.min(product.stockCount, maxPerOrder);
+  const effectiveQuantity = isOneOfOne ? 1 : Math.min(quantity, maxQuantity);
+
   const handleAddToCart = () => {
     if (isPurchaseDisabled) return;
-    for (let i = 0; i < quantity; i++) {
-      addToCart(currentProductItem, selectedSize);
-    }
+    addToCart(currentProductItem, selectedSize, effectiveQuantity, displayColorwayName);
     openCart();
   };
 
@@ -158,19 +169,19 @@ export default function ProductDetailClient({
     }
 
     setIsCheckingOut(true);
-    const totalAmount = activePrice * quantity;
+    const totalAmount = activePrice * effectiveQuantity;
 
     triggerPaystackCheckout({
       email: checkoutEmail,
       name: checkoutName,
       phone: checkoutPhone,
       deliveryAddress: checkoutAddress,
-      amountNGN: totalAmount,
       items: [
         {
           product: currentProductItem,
           size: selectedSize,
-          quantity,
+          quantity: effectiveQuantity,
+          inventoryKey: getInventoryKey(product.slug, displayColorwayName),
         },
       ],
       onSuccess: (reference: string) => {
@@ -184,7 +195,7 @@ export default function ProductDetailClient({
             {
               product: currentProductItem,
               size: selectedSize,
-              quantity,
+              quantity: effectiveQuantity,
             },
           ],
         };
@@ -203,15 +214,19 @@ export default function ProductDetailClient({
             items: [
               {
                 title: product.title,
+                slug: product.slug,
                 size: selectedSize,
-                quantity,
+                quantity: effectiveQuantity,
                 price: activePrice,
                 colorway: displayColorwayName,
                 image: displayMainImage,
+                inventoryKey: getInventoryKey(product.slug, displayColorwayName),
               },
             ],
           }),
-        }).catch((err) => console.error('Order email dispatch error:', err));
+        })
+          .then(() => refreshInventory())
+          .catch((err) => console.error('Order email dispatch error:', err));
 
         setOrderSuccess(orderSummary);
       },
@@ -510,130 +525,95 @@ export default function ProductDetailClient({
             )}
           </div>
 
-          {/* Size Selector */}
-          <div style={{ marginBottom: '2rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.75rem',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--papandu-black)',
-                }}
-              >
-                Select Size
-              </span>
-              <span
-                style={{
-                  fontSize: '0.75rem',
-                  color: 'var(--papandu-red)',
-                  fontFamily: 'var(--font-body)',
-                  cursor: 'pointer',
-                  textDecoration: 'underline',
-                  fontWeight: 500,
-                }}
-                onClick={() => setShowSizingModal(true)}
-              >
-                Sizing Guide
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-              {product.sizes.map((size) => {
-                const isSelected = selectedSize === size;
-                return (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    disabled={isPurchaseDisabled}
-                    style={{
-                      minWidth: '52px',
-                      height: '52px',
-                      padding: '0 10px',
-                      borderRadius: '4px',
-                      border: isSelected
-                        ? '2px solid var(--papandu-gold)'
-                        : '1px solid rgba(9, 10, 14, 0.2)',
-                      backgroundColor: isSelected ? 'var(--papandu-gold)' : 'transparent',
-                      color: isSelected ? 'var(--papandu-black)' : 'var(--papandu-black)',
-                      fontFamily: 'var(--font-display)',
-                      fontSize: '0.95rem',
-                      fontWeight: isSelected ? 700 : 500,
-                      cursor: isPurchaseDisabled ? 'not-allowed' : 'pointer',
-                      transition: 'all 0.2s ease',
-                      opacity: isPurchaseDisabled ? 0.4 : 1,
-                    }}
-                >
-                    {size}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
+          {/* Size is automatically set to model's size - no selector needed */}
 
           {/* Quantity & Actions */}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-            {/* Quantity Stepper */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                border: '1px solid rgba(9, 10, 14, 0.2)',
-                borderRadius: '4px',
-                height: '48px',
-              }}
-            >
-              <button
-                onClick={() => setQuantity(Math.max(1, quantity - 1))}
+            {/* 1-of-1 Archive Badge — replaces the quantity stepper */}
+            {isOneOfOne ? (
+              <div
                 style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--papandu-black)',
-                  width: '36px',
-                  height: '100%',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  gap: '0.5rem',
+                  padding: '0 1rem',
+                  height: '48px',
+                  border: '1px solid var(--papandu-gold)',
+                  borderRadius: '4px',
+                  backgroundColor: 'rgba(191, 163, 118, 0.08)',
                 }}
               >
-                <Minus size={14} />
-              </button>
-              <span
+                <StarIcon size={12} color="var(--papandu-gold)" />
+                <span
+                  style={{
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '0.75rem',
+                    letterSpacing: '0.12em',
+                    textTransform: 'uppercase',
+                    color: 'var(--papandu-black)',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  ARCHIVE PIECE · 1 OF 1
+                </span>
+              </div>
+            ) : (
+              /* Standard Quantity Stepper */
+              <div
                 style={{
-                  padding: '0 0.8rem',
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '1rem',
-                  color: 'var(--papandu-black)',
-                }}
-              >
-                {quantity}
-              </span>
-              <button
-                onClick={() => setQuantity(quantity + 1)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: 'var(--papandu-black)',
-                  width: '36px',
-                  height: '100%',
-                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  border: '1px solid rgba(9, 10, 14, 0.2)',
+                  borderRadius: '4px',
+                  height: '48px',
                 }}
               >
-                <Plus size={14} />
-              </button>
-            </div>
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  disabled={quantity <= 1}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: quantity <= 1 ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                    width: '36px',
+                    height: '100%',
+                    cursor: quantity <= 1 ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Minus size={14} />
+                </button>
+                <span
+                  style={{
+                    padding: '0 0.8rem',
+                    fontFamily: 'var(--font-display)',
+                    fontSize: '1rem',
+                    color: 'var(--papandu-black)',
+                  }}
+                >
+                  {quantity}
+                </span>
+                <button
+                  onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
+                  disabled={quantity >= maxQuantity}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: quantity >= maxQuantity ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                    width: '36px',
+                    height: '100%',
+                    cursor: quantity >= maxQuantity ? 'not-allowed' : 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Plus size={14} />
+                </button>
+              </div>
+            )}
 
             {/* Add to Bag Button */}
             <button
@@ -649,10 +629,10 @@ export default function ProductDetailClient({
               }}
             >
               {isSoldOut
-                ? 'Sold Out'
+                ? 'SOLD OUT'
                 : isComingSoon
                 ? 'Coming Soon'
-                : `Add To Bag · ${formatPrice(activePrice * quantity)}`}
+                : `Add To Bag · ${formatPrice(activePrice * effectiveQuantity)}`}
             </button>
           </div>
 
@@ -931,223 +911,6 @@ export default function ProductDetailClient({
         </section>
       )}
 
-      {/* Sizing Guide Custom Modal */}
-      {showSizingModal && (
-        <div
-          data-lenis-prevent
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 9999,
-            backgroundColor: 'rgba(5, 6, 8, 0.78)',
-            backdropFilter: 'blur(8px)',
-            WebkitBackdropFilter: 'blur(8px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            padding: '20px',
-            animation: 'fadeIn 0.2s ease-out',
-          }}
-          onClick={() => setShowSizingModal(false)}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: '#FFFFFF',
-              border: '1px solid rgba(9, 10, 14, 0.12)',
-              borderRadius: '6px',
-              maxWidth: '560px',
-              width: '100%',
-              padding: '32px 28px',
-              boxShadow: '0 25px 70px rgba(0, 0, 0, 0.35)',
-              position: 'relative',
-              color: 'var(--papandu-black)',
-            }}
-          >
-            {/* Close Button */}
-            <button
-              onClick={() => setShowSizingModal(false)}
-              aria-label="Close sizing modal"
-              style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                background: 'rgba(9, 10, 14, 0.05)',
-                border: '1px solid rgba(9, 10, 14, 0.1)',
-                borderRadius: '50%',
-                width: '34px',
-                height: '34px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'var(--papandu-black)',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(9, 10, 14, 0.12)')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(9, 10, 14, 0.05)')}
-            >
-              <X size={18} />
-            </button>
-
-            {/* Header Badge */}
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-              <StarIcon size={14} color="var(--papandu-red)" />
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.75rem', letterSpacing: '0.15em', color: 'var(--papandu-red)', fontWeight: 700, textTransform: 'uppercase' }}>
-                FIT & MEASUREMENTS
-              </span>
-            </div>
-
-            {/* Modal Title */}
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1.75rem', color: 'var(--papandu-black)', letterSpacing: '0.04em', margin: '0 0 16px', lineHeight: 1.1 }}>
-              BOXY STREETWEAR SILHOUETTE
-            </h3>
-
-            {/* Brand recommendation highlight box */}
-            <div
-              style={{
-                backgroundColor: 'rgba(118, 5, 4, 0.06)',
-                borderLeft: '3px solid var(--papandu-red)',
-                padding: '14px 16px',
-                borderRadius: '2px',
-                marginBottom: '22px',
-              }}
-            >
-              <p style={{ margin: 0, fontSize: '0.9rem', lineHeight: 1.6, color: '#2B2620', fontFamily: 'var(--font-body)' }}>
-                <strong>Boxy Streetwear Fit:</strong> We recommend your standard size for a relaxed drop-shoulder silhouette. Size up for an extreme oversized drape.
-              </p>
-            </div>
-
-            {/* Measurements Table */}
-            <div style={{ overflowX: 'auto', marginBottom: '22px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontFamily: 'var(--font-mono)', fontSize: '0.82rem' }}>
-                <thead>
-                  <tr style={{ borderBottom: '1px solid rgba(9, 10, 14, 0.12)', color: '#6B6459' }}>
-                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>SIZE</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>CHEST</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>LENGTH</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>SHOULDER</th>
-                    <th style={{ padding: '10px 8px', fontWeight: 700 }}>RECOMMENDED</th>
-                  </tr>
-                </thead>
-                <tbody style={{ color: '#2B2620' }}>
-                  {[
-                    { size: 'S', chest: '42"', length: '28"', shoulder: '20"', fit: '5\'4" – 5\'8"' },
-                    { size: 'M', chest: '45"', length: '29"', shoulder: '21"', fit: '5\'8" – 5\'11"' },
-                    { size: 'L', chest: '48"', length: '30"', shoulder: '22"', fit: '5\'11" – 6\'2"' },
-                    { size: 'XL', chest: '51"', length: '31"', shoulder: '23"', fit: '6\'1" – 6\'4"' },
-                    { size: 'XXL', chest: '54"', length: '32"', shoulder: '24"', fit: '6\'3"+' },
-                    { size: 'XXXL', chest: '57"', length: '33"', shoulder: '25"', fit: '6\'4"+ / Oversized' },
-                  ].map((row) => (
-                    <tr
-                      key={row.size}
-                      style={{
-                        borderBottom: '1px solid rgba(9, 10, 14, 0.08)',
-                        backgroundColor: selectedSize === row.size ? 'rgba(251, 220, 106, 0.25)' : 'transparent',
-                      }}
-                    >
-                      <td style={{ padding: '10px 8px', fontWeight: 700, color: selectedSize === row.size ? 'var(--papandu-red)' : 'var(--papandu-black)' }}>
-                        {row.size} {selectedSize === row.size && '•'}
-                      </td>
-                      <td style={{ padding: '10px 8px' }}>{row.chest}</td>
-                      <td style={{ padding: '10px 8px' }}>{row.length}</td>
-                      <td style={{ padding: '10px 8px' }}>{row.shoulder}</td>
-                      <td style={{ padding: '10px 8px', color: '#6B6459' }}>{row.fit}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Model Cast & Sizing Reference (From Shoot) */}
-            <div
-              style={{
-                backgroundColor: '#F8F6F0',
-                border: '1px solid rgba(9, 10, 14, 0.08)',
-                borderRadius: '4px',
-                padding: '16px',
-                marginBottom: '22px',
-              }}
-            >
-              <h4
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: '0.85rem',
-                  letterSpacing: '0.1em',
-                  textTransform: 'uppercase',
-                  color: 'var(--papandu-black)',
-                  marginBottom: '10px',
-                }}
-              >
-                Campaign Shoot Model Profiles:
-              </h4>
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-                  gap: '12px',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.78rem',
-                  color: '#2B2620',
-                }}
-              >
-                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Tolu (Male)</strong>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 6’3”</span>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 70 kg</span>
-                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size M · Size L (Cream Star)</span>
-                </div>
-                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Sarah (Slim Female)</strong>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 170 cm (5’7”)</span>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 53 kg</span>
-                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size M · Medium (Slim Fit)</span>
-                </div>
-                <div style={{ backgroundColor: '#FFFFFF', padding: '10px 12px', borderRadius: '4px', border: '1px solid rgba(9, 10, 14, 0.08)', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-                  <strong style={{ color: 'var(--papandu-black)', display: 'block', marginBottom: '4px' }}>Pamela (Plus-Size)</strong>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Height: 5’8”</span>
-                  <span style={{ color: '#6B6459', display: 'block' }}>Weight: 100 kg</span>
-                  <span style={{ color: 'var(--papandu-red)', display: 'block', marginTop: '4px', fontWeight: 600 }}>Wears: Size XL · XXXL (Ivory Oversized)</span>
-                </div>
-              </div>
-            </div>
-
-            {/* Sizing Assistance & Action */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '14px', borderTop: '1px solid rgba(9, 10, 14, 0.08)', paddingTop: '18px' }}>
-              <a
-                href="https://wa.me/2348111210706?text=Hello%20Papandu,%20I%20have%20a%20question%20about%20sizing%20for%20the%20Signature%20Stripe%20Shirt"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '0.78rem',
-                  color: 'var(--papandu-black)',
-                  textDecoration: 'underline',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontWeight: 600,
-                }}
-              >
-                <span>Still unsure? Ask stylist on WhatsApp ↗</span>
-              </a>
-
-              <button
-                onClick={() => setShowSizingModal(false)}
-                className="btn-primary"
-                style={{
-                  padding: '10px 24px',
-                  fontSize: '0.85rem',
-                  borderRadius: '2px',
-                  cursor: 'pointer',
-                }}
-              >
-                GOT IT
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

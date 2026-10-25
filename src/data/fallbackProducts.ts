@@ -38,6 +38,8 @@ export const MODEL_PROFILES: Record<'Tolu' | 'Sarah' | 'Pamela', ModelInfo> = {
   },
 };
 
+export type InventoryType = 'one_of_one' | 'standard';
+
 export interface ProductColorway {
   name: string;
   colorHex: string;
@@ -46,6 +48,10 @@ export interface ProductColorway {
   altImage?: string;
   price?: number; // per-colorway price override support
   model?: ModelInfo;
+  inventoryType?: InventoryType;
+  stockCount?: number;
+  isSoldOut?: boolean;
+  size?: string; // Single size available for this colorway (model's size)
 }
 
 export interface ProductItem {
@@ -67,6 +73,42 @@ export interface ProductItem {
   description: string;
   materialDetails?: string;
   stockCount: number;
+  inventoryType?: InventoryType;
+  maxPerOrder?: number; // Defaults to 1 for 'one_of_one', e.g. 5 for 'standard'
+  isSoldOut?: boolean;
+}
+
+/**
+ * Derives a clean colorway slug from an image path or name
+ */
+export function colorwaySlugFromImage(imagePath: string): string {
+  const match =
+    imagePath.match(/papandu-stripe-shirt-(.+?)-(?:tolu|sarah|pamela)-front/) ||
+    imagePath.match(/papandu-stripe-shirt-(.+?)-front/);
+  return match ? match[1] : '';
+}
+
+/**
+ * Generates a canonical inventory key for checking availability & marking items sold.
+ * Format: `<product-slug>::<colorway-slug>` or `<product-slug>`
+ */
+export function getInventoryKey(productSlug: string, colorway?: string | null): string {
+  if (!colorway) return productSlug.toLowerCase().trim();
+  const slugified = colorway.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  return `${productSlug.toLowerCase().trim()}::${slugified}`;
+}
+
+/**
+ * Returns true if the product or colorway is designated as 1-of-1 archive stock.
+ */
+export function isProductOneOfOne(product: ProductItem, colorwayName?: string): boolean {
+  if (colorwayName && product.colorways) {
+    const matched = product.colorways.find((cw) => cw.name.toLowerCase() === colorwayName.toLowerCase());
+    if (matched?.inventoryType) {
+      return matched.inventoryType === 'one_of_one';
+    }
+  }
+  return product.inventoryType === 'one_of_one';
 }
 
 export const FALLBACK_PRODUCTS: ProductItem[] = [
@@ -76,7 +118,9 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
     slug: 'for-the-stars-signature-stripe-shirt',
     price: 36800,
     category: 'shirts',
-    status: 'COMING SOON',
+    inventoryType: 'standard',
+    maxPerOrder: 5,
+    status: 'NEW',
     isFeatured: true,
     colorway: 'Cream / Gold Star',
     colorHex: '#E7DFC7',
@@ -88,6 +132,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'L' },
+        size: 'L',
       },
       {
         name: 'Brown & Navy Pinstripe',
@@ -96,6 +141,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-brown-navy-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-brown-navy-pinstripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'White & Navy Pinstripe',
@@ -104,6 +150,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-white-navy-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-white-navy-pinstripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Slate Blue Pinstripe',
@@ -112,6 +159,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-slate-blue-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-slate-blue-pinstripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Cobalt Pinstripe',
@@ -120,6 +168,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-cobalt-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-cobalt-pinstripe-tolu-front.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Midnight Thin Stripe',
@@ -128,6 +177,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-midnight-thin-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-midnight-thin-stripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Charcoal Pinstripe',
@@ -136,6 +186,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-charcoal-pinstripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Mauve Pinstripe',
@@ -144,6 +195,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-mauve-pinstripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-mauve-pinstripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Teal & Navy Stripe',
@@ -152,6 +204,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-teal-navy-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-teal-navy-stripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Emerald Stripe',
@@ -160,6 +213,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-emerald-stripe-tolu-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-emerald-stripe-tolu-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Tolu, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Steel Blue Stripe',
@@ -168,6 +222,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-steel-blue-stripe-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-steel-blue-stripe-pamela-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Pamela, sizeWorn: 'XL' },
+        size: 'XL',
       },
       {
         name: 'Powder Blue Stripe',
@@ -176,6 +231,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-powder-blue-stripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-powder-blue-stripe-sarah-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Sarah, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Denim Pinstripe',
@@ -185,6 +241,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         secondaryImage: '/product-images/papandu-stripe-shirt-denim-pinstripe-sarah-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-denim-pinstripe-sarah-front-alt.jpg',
         model: { ...MODEL_BASE_PROFILES.Sarah, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Burgundy Pinstripe',
@@ -194,6 +251,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         secondaryImage: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-burgundy-pinstripe-pamela-front-alt-closeup.jpg',
         model: { ...MODEL_BASE_PROFILES.Pamela, sizeWorn: 'XL' },
+        size: 'XL',
       },
       {
         name: 'Ivory Oversized',
@@ -203,6 +261,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         secondaryImage: '/product-images/papandu-stripe-shirt-ivory-oversized-pamela-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-ivory-oversized-pamela-front-alt.jpg',
         model: { ...MODEL_BASE_PROFILES.Pamela, sizeWorn: 'XXXL' },
+        size: 'XXXL',
       },
       {
         name: 'Olive Pinstripe',
@@ -211,6 +270,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-olive-pinstripe-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-olive-pinstripe-sarah-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Sarah, sizeWorn: 'M' },
+        size: 'M',
       },
       {
         name: 'Jet Black Pinstripe',
@@ -220,6 +280,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         secondaryImage: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-back.jpg',
         altImage: '/product-images/papandu-stripe-shirt-jet-black-pinstripe-sarah-front-alt.jpg',
         model: { ...MODEL_BASE_PROFILES.Sarah, sizeWorn: 'Medium (Slim Fit)' },
+        size: 'M',
       },
       {
         name: 'Graphite Micro-Check',
@@ -228,6 +289,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-graphite-check-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-graphite-check-pamela-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Pamela, sizeWorn: 'XL' },
+        size: 'XL',
       },
       {
         name: 'Navy & Burgundy Pinstripe',
@@ -236,6 +298,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-pamela-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-navy-burgundy-pinstripe-pamela-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Pamela, sizeWorn: 'XL' },
+        size: 'XL',
       },
       {
         name: 'Sky Blue Gingham',
@@ -244,6 +307,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
         mainImage: '/product-images/papandu-stripe-shirt-sky-gingham-sarah-front.jpg',
         secondaryImage: '/product-images/papandu-stripe-shirt-sky-gingham-sarah-back.jpg',
         model: { ...MODEL_BASE_PROFILES.Sarah, sizeWorn: 'M' },
+        size: 'M',
       },
     ],
     sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
@@ -252,6 +316,24 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
     description: 'The centerpiece of PAPANDU\'s "For The Stars" collection (dropping 23rd). Short-sleeve button-up in the signature PAPANDU stripe, with the wordmark and five-star row embroidered on the chest and a scripture back-print across the yoke — "Those who are wise will shine like the brightness of the heavens; and those who lead others to righteousness, like the stars for ever and ever." Available in 20 colorways. Boxy, unisex fit.',
     materialDetails: 'Lightweight cotton shirting · Chest embroidery · Screen-printed back yoke · Relaxed drop-shoulder fit',
     stockCount: 40,
+  },
+  {
+    id: 'prod-essential-hoodie',
+    title: 'Essential Heavyweight Hoodie',
+    slug: 'essential-heavyweight-hoodie',
+    price: 25000,
+    category: 'hoodies',
+    inventoryType: 'standard',
+    maxPerOrder: 5,
+    status: 'NEW',
+    colorway: 'Jet Black',
+    colorHex: '#090A0E',
+    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
+    mainImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
+    secondaryImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-back.jpg',
+    description: 'Essential heavyweight hoodie in 320gsm cotton fleece. Relaxed fit with drop shoulders and ribbed cuffs/hem. Premium construction for everyday wear.',
+    materialDetails: '320gsm cotton fleece · Double-lined hood · Ribbed cuffs and hem',
+    stockCount: 100,
   },
 ];
 

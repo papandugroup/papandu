@@ -9,6 +9,7 @@ import { useDrawerTransition, useEscapeKey } from '@/hooks/useDrawerTransition';
 import { PaymentMethods } from './PaymentMethods';
 import { triggerPaystackCheckout } from '@/lib/paystack';
 import { StarIcon } from './StarIcon';
+import { isProductOneOfOne } from '@/data/fallbackProducts';
 
 export const CartDrawer: React.FC = () => {
   const {
@@ -60,7 +61,6 @@ export const CartDrawer: React.FC = () => {
       name: customerName,
       phone: customerPhone,
       deliveryAddress,
-      amountNGN: cartTotalNGN,
       items: cart,
       onSuccess: (reference: string) => {
         setIsProcessing(false);
@@ -84,11 +84,13 @@ export const CartDrawer: React.FC = () => {
             totalFormatted: formatPrice(cartTotalNGN),
             items: cart.map((i) => ({
               title: i.product.title,
+              slug: i.product.slug,
               size: i.size,
               quantity: i.quantity,
               price: i.product.price,
-              colorway: i.product.colorway,
+              colorway: i.colorway || i.product.colorway,
               image: i.product.mainImage,
+              inventoryKey: i.inventoryKey,
             })),
           }),
         }).catch((err) => console.error('Order email dispatch error:', err));
@@ -220,88 +222,129 @@ export const CartDrawer: React.FC = () => {
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {cart.map((item) => (
-                <div
-                  key={`${item.product.id}-${item.size}`}
-                  style={{
-                    display: 'flex',
-                    gap: '14px',
-                    paddingBottom: '16px',
-                    borderBottom: '1px solid rgba(9, 10, 14, 0.06)',
-                  }}
-                >
+              {cart.map((item) => {
+                const isOneOfOne = isProductOneOfOne(item.product, item.colorway);
+                return (
                   <div
+                    key={`${item.product.id}-${item.size}`}
                     style={{
-                      width: '72px',
-                      height: '90px',
-                      position: 'relative',
-                      flexShrink: 0,
-                      backgroundColor: '#EDE6DC',
-                      borderRadius: '2px',
-                      overflow: 'hidden',
+                      display: 'flex',
+                      gap: '14px',
+                      paddingBottom: '16px',
+                      borderBottom: '1px solid rgba(9, 10, 14, 0.06)',
                     }}
                   >
-                    <Image
-                      src={item.product.mainImage}
-                      alt={item.product.title}
-                      fill
-                      style={{ objectFit: 'cover' }}
-                    />
-                  </div>
-
-                  <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <div>
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                        <h4 style={{ fontSize: '1rem', lineHeight: 1.2, color: 'var(--papandu-black)' }}>
-                          {item.product.title}
-                        </h4>
-                        <button
-                          onClick={() => removeFromCart(item.product.id, item.size)}
-                          style={{ color: '#6B6459', padding: '2px' }}
-                          title="Remove item"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-
-                      <p style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: '#6B6459', marginTop: '4px' }}>
-                        SIZE: <span style={{ color: 'var(--papandu-red)' }}>{item.size}</span> · {item.product.colorway}
-                      </p>
+                    <div
+                      style={{
+                        width: '72px',
+                        height: '90px',
+                        position: 'relative',
+                        flexShrink: 0,
+                        backgroundColor: '#EDE6DC',
+                        borderRadius: '2px',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <Image
+                        src={item.product.mainImage}
+                        alt={item.product.title}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
                     </div>
 
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
-                      <div
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          border: '1px solid rgba(9, 10, 14, 0.15)',
-                          borderRadius: '2px',
-                        }}
-                      >
-                        <button
-                          onClick={() => updateQuantity(item.product.id, item.size, -1)}
-                          style={{ padding: '4px 8px', color: 'var(--papandu-black)' }}
-                        >
-                          <Minus size={12} />
-                        </button>
-                        <span style={{ padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
-                          {item.quantity}
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                          <h4 style={{ fontSize: '1rem', lineHeight: 1.2, color: 'var(--papandu-black)' }}>
+                            {item.product.title}
+                          </h4>
+                          <button
+                            onClick={() => removeFromCart(item.product.id, item.size, item.colorway)}
+                            style={{ color: '#6B6459', padding: '2px' }}
+                            title="Remove item"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+
+                        <p style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: '#6B6459', marginTop: '4px' }}>
+                          SIZE: <span style={{ color: 'var(--papandu-red)' }}>{item.size}</span> · {item.colorway || item.product.colorway}
+                        </p>
+                      </div>
+
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
+                        {isOneOfOne ? (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              gap: '0.4rem',
+                              padding: '4px 8px',
+                              border: '1px solid var(--papandu-gold)',
+                              borderRadius: '2px',
+                              backgroundColor: 'rgba(191, 163, 118, 0.08)',
+                            }}
+                          >
+                            <StarIcon size={10} color="var(--papandu-gold)" />
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-display)',
+                                fontSize: '0.65rem',
+                                letterSpacing: '0.1em',
+                                textTransform: 'uppercase',
+                                color: 'var(--papandu-black)',
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              1 OF 1
+                            </span>
+                          </div>
+                        ) : (
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              border: '1px solid rgba(9, 10, 14, 0.15)',
+                              borderRadius: '2px',
+                            }}
+                          >
+                            <button
+                              onClick={() => updateQuantity(item.product.id, item.size, -1, item.colorway)}
+                              disabled={item.quantity <= 1}
+                              style={{
+                                padding: '4px 8px',
+                                color: item.quantity <= 1 ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                                cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer',
+                              }}
+                            >
+                              <Minus size={12} />
+                            </button>
+                            <span style={{ padding: '0 8px', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}>
+                              {item.quantity}
+                            </span>
+                            <button
+                              onClick={() => updateQuantity(item.product.id, item.size, 1, item.colorway)}
+                              disabled={item.quantity >= (item.product.maxPerOrder || 5)}
+                              style={{
+                                padding: '4px 8px',
+                                color: item.quantity >= (item.product.maxPerOrder || 5) ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                                cursor: item.quantity >= (item.product.maxPerOrder || 5) ? 'not-allowed' : 'pointer',
+                              }}
+                            >
+                              <Plus size={12} />
+                            </button>
+                          </div>
+                        )}
+
+                        <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.95rem' }}>
+                          {formatPrice(item.product.price * item.quantity)}
                         </span>
-                        <button
-                          onClick={() => updateQuantity(item.product.id, item.size, 1)}
-                          style={{ padding: '4px 8px', color: 'var(--papandu-black)' }}
-                        >
-                          <Plus size={12} />
-                        </button>
                       </div>
-
-                      <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.95rem' }}>
-                        {formatPrice(item.product.price * item.quantity)}
-                      </span>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

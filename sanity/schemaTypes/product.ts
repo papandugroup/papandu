@@ -65,6 +65,27 @@ export const productType = defineType({
       initialValue: 'NEW',
     }),
     defineField({
+      name: 'inventoryType',
+      title: 'Inventory Policy',
+      type: 'string',
+      description: 'Choose "1 of 1 Archive Piece" (locks quantity to 1, marks sold out after single purchase) or "Standard" (allows multiple quantity).',
+      options: {
+        list: [
+          { title: '1 of 1 Archive Piece (Unique)', value: 'one_of_one' },
+          { title: 'Standard Inventory (Multiple Qty)', value: 'standard' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'standard',
+    }),
+    defineField({
+      name: 'maxPerOrder',
+      title: 'Max Per Order',
+      type: 'number',
+      description: 'Maximum quantity a customer can purchase per order. Defaults to 1 for 1-of-1 items, 5 for standard items.',
+      initialValue: 5,
+    }),
+    defineField({
       name: 'isFeatured',
       title: 'Featured on Homepage (The Latest Drop)',
       type: 'boolean',

@@ -7,7 +7,6 @@ interface CheckoutOptions {
   name: string;
   phone?: string;
   deliveryAddress?: string;
-  amountNGN: number;
   items: CartItem[];
   onSuccess: (reference: string) => void;
   onCancel?: () => void;
@@ -18,7 +17,6 @@ export async function triggerPaystackCheckout({
   name,
   phone,
   deliveryAddress,
-  amountNGN,
   items,
   onSuccess,
   onCancel,
@@ -28,32 +26,52 @@ export async function triggerPaystackCheckout({
   const publicKey =
     process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY || 'pk_test_d34a4175b341f71ce54f3ef1c4794e77353f4b66';
 
-  const reference = `PAP-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
-  const amountInKobo = Math.round(amountNGN * 100);
+  // Generate session ID for reservation tracking
+  const sessionId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
   try {
+    // Call server to initialize checkout (server calculates prices, checks stock, acquires locks)
+    const initResponse = await fetch('/api/checkout/initialize', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        name,
+        phone,
+        deliveryAddress,
+        items: items.map((item) => ({
+          productId: item.product.id,
+          slug: item.product.slug,
+          colorway: item.colorway,
+          size: item.size,
+          quantity: item.quantity,
+          inventoryKey: item.inventoryKey,
+        })),
+        sessionId,
+      }),
+    });
+
+    const initData = await initResponse.json();
+
+    if (!initData.success) {
+      if (initData.code === 'ITEM_UNAVAILABLE') {
+        alert(initData.message);
+      } else {
+        alert(initData.message || 'Failed to initialize checkout');
+      }
+      if (onCancel) onCancel();
+      return;
+    }
+
+    // Launch Paystack popup with server-provided access_code
     const PaystackModule = await import('@paystack/inline-js');
     const PaystackPop = PaystackModule.default || PaystackModule;
     const paystack = new PaystackPop();
 
-    paystack.newTransaction({
+    paystack.resumeTransaction({
       key: publicKey,
-      email,
-      amount: amountInKobo,
-      currency: 'NGN',
-      reference,
-      metadata: {
-        custom_fields: [
-          { display_name: 'Customer Name', variable_name: 'customer_name', value: name },
-          { display_name: 'Phone Number', variable_name: 'phone_number', value: phone || '' },
-          { display_name: 'Delivery Address', variable_name: 'delivery_address', value: deliveryAddress || '' },
-          {
-            display_name: 'Items Ordered',
-            variable_name: 'items_summary',
-            value: items.map((i) => `${i.product.title} (${i.size}) x${i.quantity}`).join(', '),
-          },
-        ],
-      },
+      access_code: initData.access_code,
+      reference: initData.reference,
       onSuccess: async (transaction: any) => {
         try {
           const confettiModule = await import('canvas-confetti');
@@ -68,10 +86,33 @@ export async function triggerPaystackCheckout({
           // non-critical
         }
 
-        const transRef = transaction?.reference || reference;
+        const transRef = transaction?.reference || initData.reference;
         onSuccess(transRef);
       },
-      onCancel: () => {
+      onCancel: async () => {
+        // Release reservation locks if user cancels
+        if (initData.reservedKeys && initData.reservedKeys.length > 0) {
+          try {
+            await fetch('/api/checkout/reserve', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                items: items.map((item) => ({
+                  productId: item.product.id,
+                  slug: item.product.slug,
+                  colorway: item.colorway,
+                  size: item.size,
+                  quantity: item.quantity,
+                  inventoryKey: item.inventoryKey,
+                })),
+                sessionId,
+                action: 'release',
+              }),
+            });
+          } catch (e) {
+            console.error('Failed to release reservation:', e);
+          }
+        }
         if (onCancel) onCancel();
       },
     });

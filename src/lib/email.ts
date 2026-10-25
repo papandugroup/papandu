@@ -43,9 +43,26 @@ export async function sendOrderConfirmationEmail(order: OrderConfirmationData) {
   try {
     const backupDir = path.join(process.cwd(), 'data/orders');
     await fs.mkdir(backupDir, { recursive: true });
+    const logEntry = {
+      timestamp: new Date().toISOString(),
+      reference,
+      customerName,
+      customerEmail,
+      customerPhone,
+      deliveryAddress,
+      totalFormatted,
+      items: items.map((item) => ({
+        title: item.title,
+        colorway: item.colorway,
+        size: item.size,
+        quantity: item.quantity,
+        price: item.price,
+        inventoryKey: (item as any).inventoryKey,
+      })),
+    };
     await fs.appendFile(
       path.join(backupDir, 'orders.log'),
-      JSON.stringify({ timestamp: new Date().toISOString(), ...order }) + '\n'
+      JSON.stringify(logEntry) + '\n'
     );
   } catch (backupError) {
     console.warn('Local order backup write skipped:', backupError);
