@@ -124,7 +124,6 @@ export const HeroSlider: React.FC = () => {
                 color: '#FBDC6A',
               }}
             >
-              FOR THE STARS · COMING SEPT 23
             </span>
           </div>
 
@@ -176,7 +175,6 @@ export const HeroSlider: React.FC = () => {
               letterSpacing: '0.08em',
             }}
           >
-            LAGOS, NIGERIA · 6.5244° N, 3.3792° E
           </span>
         </div>
       </div>

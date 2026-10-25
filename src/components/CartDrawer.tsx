@@ -11,6 +11,12 @@ import { triggerPaystackCheckout } from '@/lib/paystack';
 import { StarIcon } from './StarIcon';
 import { isProductOneOfOne } from '@/data/fallbackProducts';
 
+// Helper to identify the star collection product
+function isStarCollectionProduct(product: any): boolean {
+  return product.title === '"For The Stars" Signature Stripe Shirt' ||
+         product.slug === 'for-the-stars-signature-stripe-shirt';
+}
+
 export const CartDrawer: React.FC = () => {
   const {
     cart,
@@ -325,17 +331,21 @@ export const CartDrawer: React.FC = () => {
                             </span>
                             <button
                               onClick={() => updateQuantity(item.product.id, item.size, 1, item.colorway)}
-                              disabled={item.quantity >= (item.product.maxPerOrder || 5)}
+                              disabled={item.quantity >= (() => {
+                                const maxQty = isStarCollectionProduct(item.product) ? 1 : (item.product.maxPerOrder || 5);
+                                return maxQty;
+                              })()}
                               style={{
                                 padding: '4px 8px',
-                                color: item.quantity >= (item.product.maxPerOrder || 5) ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
-                                cursor: item.quantity >= (item.product.maxPerOrder || 5) ? 'not-allowed' : 'pointer',
+                                color: item.quantity >= (isStarCollectionProduct(item.product) ? 1 : (item.product.maxPerOrder || 5)) ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                                cursor: item.quantity >= (isStarCollectionProduct(item.product) ? 1 : (item.product.maxPerOrder || 5)) ? 'not-allowed' : 'pointer',
                               }}
                             >
                               <Plus size={12} />
                             </button>
                           </div>
-                        )}
+                        )
+                        }
 
                         <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 700, fontSize: '0.95rem' }}>
                           {formatPrice(item.product.price * item.quantity)}

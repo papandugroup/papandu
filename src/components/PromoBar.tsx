@@ -29,7 +29,7 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 
 export const PromoBar: React.FC<PromoBarProps> = ({ message }) => {
   const [activeMessage, setActiveMessage] = useState(
-    message || (typeof window !== 'undefined' && isDropLive() ? LIVE_MESSAGE : PRE_LAUNCH_MESSAGE)
+    message || (isDropLive() ? LIVE_MESSAGE : PRE_LAUNCH_MESSAGE)
   );
   // Starts visible so the server and first client render agree — anything else
   // is a hydration mismatch.

@@ -42,6 +42,11 @@ function normalizeSlug(slug: string): string {
   return slug.replace(/-(?:tolu|sarah|pamela)$/i, '').toLowerCase().trim();
 }
 
+function isStarCollectionProduct(product: ProductItem): boolean {
+  return product.title === '"For The Stars" Signature Stripe Shirt' ||
+         product.slug === 'for-the-stars-signature-stripe-shirt';
+}
+
 function findColorwayIndex(colorways: ProductColorway[] | undefined, queryColor: string | null): number {
   if (!colorways || colorways.length === 0 || !queryColor) return 0;
   const target = normalizeSlug(queryColor);
@@ -597,14 +602,14 @@ export default function ProductDetailClient({
                 </span>
                 <button
                   onClick={() => setQuantity(Math.min(maxQuantity, quantity + 1))}
-                  disabled={quantity >= maxQuantity}
+                  disabled={quantity >= maxQuantity || (isStarCollectionProduct(product) && quantity >= 1)}
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: quantity >= maxQuantity ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
+                    color: (quantity >= maxQuantity || (isStarCollectionProduct(product) && quantity >= 1)) ? 'rgba(9, 10, 14, 0.3)' : 'var(--papandu-black)',
                     width: '36px',
                     height: '100%',
-                    cursor: quantity >= maxQuantity ? 'not-allowed' : 'pointer',
+                    cursor: (quantity >= maxQuantity || (isStarCollectionProduct(product) && quantity >= 1)) ? 'not-allowed' : 'pointer',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',

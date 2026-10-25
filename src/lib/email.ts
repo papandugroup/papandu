@@ -28,6 +28,11 @@ const getResendClient = () => {
   return new Resend(apiKey);
 };
 
+// Team email for order notifications
+const getTeamEmail = () => {
+  return process.env.RESEND_TEAM_EMAIL || 'hello@papandu.store';
+};
+
 export async function sendOrderConfirmationEmail(order: OrderConfirmationData) {
   const {
     reference,
@@ -262,9 +267,12 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
 `;
 
   try {
+    const teamEmail = getTeamEmail();
+    const recipients = [customerEmail, teamEmail];
+
     const response = await resend.emails.send({
       from: fromEmail,
-      to: customerEmail,
+      to: recipients,
       subject: `Order Confirmed #${reference} — PAPANDU`,
       text: textContent,
       html: htmlContent,

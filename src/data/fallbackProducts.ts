@@ -316,24 +316,7 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
     description: 'The centerpiece of PAPANDU\'s "For The Stars" collection (dropping 23rd). Short-sleeve button-up in the signature PAPANDU stripe, with the wordmark and five-star row embroidered on the chest and a scripture back-print across the yoke — "Those who are wise will shine like the brightness of the heavens; and those who lead others to righteousness, like the stars for ever and ever." Available in 20 colorways. Boxy, unisex fit.',
     materialDetails: 'Lightweight cotton shirting · Chest embroidery · Screen-printed back yoke · Relaxed drop-shoulder fit',
     stockCount: 40,
-  },
-  {
-    id: 'prod-essential-hoodie',
-    title: 'Essential Heavyweight Hoodie',
-    slug: 'essential-heavyweight-hoodie',
-    price: 25000,
-    category: 'hoodies',
-    inventoryType: 'standard',
-    maxPerOrder: 5,
-    status: 'NEW',
-    colorway: 'Jet Black',
-    colorHex: '#090A0E',
-    sizes: ['S', 'M', 'L', 'XL', 'XXL'],
-    mainImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-front.jpg',
-    secondaryImage: '/product-images/papandu-stripe-shirt-cream-star-tolu-back.jpg',
-    description: 'Essential heavyweight hoodie in 320gsm cotton fleece. Relaxed fit with drop shoulders and ribbed cuffs/hem. Premium construction for everyday wear.',
-    materialDetails: '320gsm cotton fleece · Double-lined hood · Ribbed cuffs and hem',
-    stockCount: 100,
-  },
+  }
+
 ];
 
