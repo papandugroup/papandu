@@ -88,8 +88,8 @@ export default function ProductDetailClient({
   const displaySecondaryImage = currentColorway ? currentColorway.secondaryImage : product.secondaryImage;
   const activePrice = currentColorway?.price ?? product.price;
 
-  // Use colorway's single size (model's size)
-  const selectedSize = currentColorway?.size || product.sizes[0] || 'M';
+  // Use colorway's sizes - default to the first available size
+  const selectedSize = (currentColorway?.size && currentColorway.size[0]) || product.sizes[0] || 'M';
 
   // Determine if this product/colorway uses 1-of-1 archive inventory
   const isOneOfOne = isProductOneOfOne(product, displayColorwayName);
