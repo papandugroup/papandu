@@ -79,11 +79,22 @@ export async function POST(req: Request) {
         }
       }
 
-      // Validate quantity based on inventory type
+      // Validate quantity is a positive integer within allowed bounds
       const isOneOfOne = isProductOneOfOne(product, colorwayName);
-      if (isOneOfOne && item.quantity > 1) {
+      const isStarCollection = product.slug === 'for-the-stars-signature-stripe-shirt';
+      const maxAllowed = isOneOfOne || isStarCollection ? 1 : (product.maxPerOrder || 5);
+
+      if (
+        typeof item.quantity !== 'number' ||
+        !Number.isInteger(item.quantity) ||
+        item.quantity < 1 ||
+        item.quantity > maxAllowed
+      ) {
         return NextResponse.json(
-          { success: false, message: '1-of-1 items cannot be purchased in quantities greater than 1' },
+          {
+            success: false,
+            message: `Invalid quantity for ${product.title}. Allowed: 1 to ${maxAllowed}.`,
+          },
           { status: 400 }
         );
       }

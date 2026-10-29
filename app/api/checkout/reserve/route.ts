@@ -18,9 +18,12 @@ export async function POST(req: Request) {
       const colorwayName = item.product?.colorway || item.colorway;
       const key = item.inventoryKey || getInventoryKey(productSlug, colorwayName);
 
-      // Check if product is 1-of-1
+      // Check if product exists and is 1-of-1
       const foundProduct = FALLBACK_PRODUCTS.find((p) => p.slug === productSlug);
-      const isOneOfOne = foundProduct ? isProductOneOfOne(foundProduct, colorwayName) : true;
+      if (!foundProduct) {
+        return NextResponse.json({ success: false, message: 'Invalid product specified' }, { status: 404 });
+      }
+      const isOneOfOne = isProductOneOfOne(foundProduct, colorwayName);
 
       if (isOneOfOne) {
         oneOfOneKeys.push(key);
@@ -32,6 +35,9 @@ export async function POST(req: Request) {
     }
 
     if (action === 'release') {
+      if (!sessionId || typeof sessionId !== 'string') {
+        return NextResponse.json({ success: false, message: 'Valid sessionId required to release reservation' }, { status: 400 });
+      }
       await releaseReservation(oneOfOneKeys, sessionId);
       return NextResponse.json({ success: true, message: 'Reservation released' });
     }

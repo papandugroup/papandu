@@ -33,6 +33,15 @@ const getTeamEmail = () => {
   return process.env.RESEND_TEAM_EMAIL || 'hello@papandu.store';
 };
 
+function escapeHtml(value: unknown): string {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export async function sendOrderConfirmationEmail(order: OrderConfirmationData) {
   const {
     reference,
@@ -132,18 +141,24 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
 `;
 
   // 5. Build High-Aesthetics HTML Template
+  const safeRef = escapeHtml(reference);
+  const safeCustomerName = escapeHtml(customerName);
+  const safeDeliveryAddress = escapeHtml(deliveryAddress || 'Standard Delivery / Lagos');
+  const safeCustomerPhone = customerPhone ? escapeHtml(customerPhone) : '';
+  const safeTotalFormatted = escapeHtml(totalFormatted);
+
   const itemsHtml = items
     .map(
       (item) => `
       <tr>
         <td style="padding: 16px 0; border-bottom: 1px solid #222226;">
-          <strong style="color: #FFFFFF; font-size: 15px; display: block; letter-spacing: 0.02em;">${item.title}</strong>
+          <strong style="color: #FFFFFF; font-size: 15px; display: block; letter-spacing: 0.02em;">${escapeHtml(item.title)}</strong>
           <span style="color: #A29D94; font-size: 13px; font-family: monospace;">
-            ${item.colorway ? item.colorway + ' · ' : ''}SIZE: ${item.size} · QTY: ${item.quantity}
+            ${item.colorway ? escapeHtml(item.colorway) + ' · ' : ''}SIZE: ${escapeHtml(item.size)} · QTY: ${escapeHtml(item.quantity)}
           </span>
         </td>
         <td style="padding: 16px 0; border-bottom: 1px solid #222226; text-align: right; color: #FBDC6A; font-family: monospace; font-size: 14px; font-weight: bold; vertical-align: top;">
-          ₦${(item.price * item.quantity).toLocaleString()}
+          ₦${(Number(item.price) * Number(item.quantity)).toLocaleString()}
         </td>
       </tr>
     `
@@ -156,7 +171,7 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Your PAPANDU Order #${reference}</title>
+  <title>Your PAPANDU Order #${safeRef}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #07080A; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #ECE8E1;">
   <table width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #07080A; padding: 40px 12px;">
@@ -175,7 +190,7 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
                 PAPANDU
               </h1>
               <div style="font-family: monospace; font-size: 12px; color: rgba(255,255,255,0.8); margin-top: 6px;">
-                ORDER #${reference}
+                ORDER #${safeRef}
               </div>
             </td>
           </tr>
@@ -184,7 +199,7 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
           <tr>
             <td style="padding: 36px 32px 24px;">
               <h2 style="margin: 0 0 14px; font-size: 20px; color: #FFFFFF; font-weight: 600;">
-                Welcome to the Tribe, ${customerName}.
+                Welcome to the Tribe, ${safeCustomerName}.
               </h2>
               <p style="margin: 0 0 24px; color: #A29D94; font-size: 14px; line-height: 1.65;">
                 Your piece has been secured from the <strong style="color: #FFFFFF;">"For The Stars"</strong> release. Our Lagos atelier is now preparing your garments with the utmost attention to craftsmanship and detail.
@@ -198,9 +213,9 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
                       DISPATCH DESTINATION
                     </div>
                     <div style="color: #FFFFFF; font-size: 14px; font-weight: 500;">
-                      ${deliveryAddress || 'Standard Delivery / Lagos'}
+                      ${safeDeliveryAddress}
                     </div>
-                    ${customerPhone ? `<div style="color: #8E8A82; font-size: 12px; font-family: monospace; margin-top: 4px;">Phone: ${customerPhone}</div>` : ''}
+                    ${safeCustomerPhone ? `<div style="color: #8E8A82; font-size: 12px; font-family: monospace; margin-top: 4px;">Phone: ${safeCustomerPhone}</div>` : ''}
                   </td>
                 </tr>
               </table>
@@ -220,7 +235,7 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
                     TOTAL PAID (PAYSTACK)
                   </td>
                   <td style="text-align: right; font-family: monospace; font-size: 18px; color: #FBDC6A; font-weight: 900;">
-                    ${totalFormatted}
+                    ${safeTotalFormatted}
                   </td>
                 </tr>
               </table>
@@ -239,7 +254,7 @@ PAPANDU Streetwear · Victoria Island, Lagos, Nigeria
 
               <!-- Action CTA -->
               <div style="text-align: center; margin-bottom: 16px;">
-                <a href="https://wa.me/2348111210706?text=Hello%20Papandu,%20inquiring%20about%20order%20${reference}" style="display: inline-block; background-color: #FBDC6A; color: #090A0E; font-family: monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 14px 28px; border-radius: 2px;">
+                <a href="https://wa.me/2348111210706?text=Hello%20Papandu,%20inquiring%20about%20order%20${encodeURIComponent(reference)}" style="display: inline-block; background-color: #FBDC6A; color: #090A0E; font-family: monospace; font-size: 13px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; text-decoration: none; padding: 14px 28px; border-radius: 2px;">
                   TRACK ORDER VIA WHATSAPP →
                 </a>
               </div>

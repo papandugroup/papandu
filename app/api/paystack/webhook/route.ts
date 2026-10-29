@@ -9,16 +9,20 @@ export async function POST(req: Request) {
     const paystackSignature = req.headers.get('x-paystack-signature');
     const secretKey = process.env.PAYSTACK_SECRET_KEY;
 
-    // Verify Paystack HMAC SHA512 signature if secret key is present
-    if (secretKey && paystackSignature) {
-      const hash = crypto
-        .createHmac('sha512', secretKey)
-        .update(rawBody)
-        .digest('hex');
+    // Require Paystack HMAC SHA512 signature verification unconditionally
+    if (!secretKey || !paystackSignature) {
+      return NextResponse.json({ message: 'Unauthorized: missing signature or secret' }, { status: 401 });
+    }
 
-      if (hash !== paystackSignature) {
-        return NextResponse.json({ message: 'Invalid signature' }, { status: 401 });
-      }
+    const hash = crypto
+      .createHmac('sha512', secretKey)
+      .update(rawBody)
+      .digest('hex');
+
+    const hashBuf = Buffer.from(hash, 'utf8');
+    const sigBuf = Buffer.from(paystackSignature, 'utf8');
+    if (hashBuf.length !== sigBuf.length || !crypto.timingSafeEqual(hashBuf, sigBuf)) {
+      return NextResponse.json({ message: 'Invalid signature' }, { status: 401 });
     }
 
     const event = JSON.parse(rawBody);

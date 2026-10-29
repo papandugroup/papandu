@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { isIP } from 'node:net';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,15 +18,16 @@ export async function GET(req: NextRequest) {
     // perform a fast server-side fallback lookup with a short timeout.
     if (!countryCode || countryCode === 'XX') {
       try {
-        const clientIp =
+        const rawIp =
           req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
-          req.headers.get('x-real-ip');
+          req.headers.get('x-real-ip')?.trim();
+        const clientIp = rawIp && isIP(rawIp) !== 0 ? rawIp : null;
 
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 2000);
 
         const url = clientIp && clientIp !== '::1' && clientIp !== '127.0.0.1'
-          ? `https://api.country.is/${clientIp}`
+          ? `https://api.country.is/${encodeURIComponent(clientIp)}`
           : 'https://api.country.is';
 
         const res = await fetch(url, {
