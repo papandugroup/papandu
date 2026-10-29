@@ -88,8 +88,16 @@ export default function ProductDetailClient({
   const displaySecondaryImage = currentColorway ? currentColorway.secondaryImage : product.secondaryImage;
   const activePrice = currentColorway?.price ?? product.price;
 
-  // Use colorway's sizes - default to the first available size
-  const selectedSize = (currentColorway?.size && currentColorway.size[0]) || product.sizes[0] || 'M';
+  // Available sizes for the current colorway (falls back to product sizes)
+  const availableSizes =
+    currentColorway?.size && currentColorway.size.length > 0
+      ? currentColorway.size
+      : product.sizes && product.sizes.length > 0
+      ? product.sizes
+      : ['M'];
+
+  const [selectedSize, setSelectedSize] = useState<string>(availableSizes[0]);
+  const activeSelectedSize = availableSizes.includes(selectedSize) ? selectedSize : availableSizes[0];
 
   // Determine if this product/colorway uses 1-of-1 archive inventory
   const isOneOfOne = isProductOneOfOne(product, displayColorwayName);
@@ -101,6 +109,7 @@ export default function ProductDetailClient({
     colorHex: displayColorHex,
     mainImage: displayMainImage,
     secondaryImage: displaySecondaryImage,
+    sizes: availableSizes,
   };
 
   const [activeImage, setActiveImage] = useState<string>(
@@ -113,16 +122,26 @@ export default function ProductDetailClient({
     if (!product.colorways || product.colorways.length === 0) return;
     const matchedIdx = findColorwayIndex(product.colorways, color);
     setSelectedColorwayIdx(matchedIdx);
-    if (product.colorways[matchedIdx]) {
-      setActiveImage(product.colorways[matchedIdx].mainImage);
+    const matchedCw = product.colorways[matchedIdx];
+    if (matchedCw) {
+      setActiveImage(matchedCw.mainImage);
+      const nextSizes = matchedCw.size && matchedCw.size.length > 0 ? matchedCw.size : product.sizes;
+      if (nextSizes && nextSizes.length > 0) {
+        setSelectedSize(nextSizes[0]);
+      }
     }
-  }, [searchParams, product.colorways]);
+  }, [searchParams, product.colorways, product.sizes]);
 
   const handleSelectColorway = (idx: number) => {
     setSelectedColorwayIdx(idx);
     if (product.colorways && product.colorways[idx]) {
-      setActiveImage(product.colorways[idx].mainImage);
-      const slug = colorwaySlugFromImage(product.colorways[idx].mainImage);
+      const nextCw = product.colorways[idx];
+      setActiveImage(nextCw.mainImage);
+      const nextSizes = nextCw.size && nextCw.size.length > 0 ? nextCw.size : product.sizes;
+      if (nextSizes && nextSizes.length > 0) {
+        setSelectedSize(nextSizes[0]);
+      }
+      const slug = colorwaySlugFromImage(nextCw.mainImage);
       if (slug && typeof window !== 'undefined') {
         const url = new URL(window.location.href);
         url.searchParams.set('color', slug);
@@ -153,7 +172,7 @@ export default function ProductDetailClient({
 
   const handleAddToCart = () => {
     if (isPurchaseDisabled) return;
-    addToCart(currentProductItem, selectedSize, effectiveQuantity, displayColorwayName);
+    addToCart(currentProductItem, activeSelectedSize, effectiveQuantity, displayColorwayName);
     openCart();
   };
 
@@ -184,7 +203,7 @@ export default function ProductDetailClient({
       items: [
         {
           product: currentProductItem,
-          size: selectedSize,
+          size: activeSelectedSize,
           quantity: effectiveQuantity,
           inventoryKey: getInventoryKey(product.slug, displayColorwayName),
         },
@@ -199,7 +218,7 @@ export default function ProductDetailClient({
           items: [
             {
               product: currentProductItem,
-              size: selectedSize,
+              size: activeSelectedSize,
               quantity: effectiveQuantity,
             },
           ],
@@ -220,7 +239,7 @@ export default function ProductDetailClient({
               {
                 title: product.title,
                 slug: product.slug,
-                size: selectedSize,
+                size: activeSelectedSize,
                 quantity: effectiveQuantity,
                 price: activePrice,
                 colorway: displayColorwayName,
@@ -530,7 +549,63 @@ export default function ProductDetailClient({
             )}
           </div>
 
-          {/* Size is automatically set to model's size - no selector needed */}
+          {/* Available Size(s) for Active Colorway (first size auto-selected by default) */}
+          <div style={{ marginBottom: '1.75rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.65rem',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '0.85rem',
+                  letterSpacing: '0.1em',
+                  textTransform: 'uppercase',
+                  color: 'var(--papandu-black)',
+                }}
+              >
+                {availableSizes.length > 1 ? 'Select Size' : 'Size'}:{' '}
+                <strong style={{ color: 'var(--papandu-red)' }}>{activeSelectedSize}</strong>
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+              {availableSizes.map((size) => {
+                const isSelected = activeSelectedSize === size;
+                return (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setSelectedSize(size)}
+                    disabled={isPurchaseDisabled}
+                    style={{
+                      minWidth: '48px',
+                      height: '44px',
+                      padding: '0 12px',
+                      borderRadius: '4px',
+                      border: isSelected
+                        ? '2px solid var(--papandu-gold)'
+                        : '1px solid rgba(9, 10, 14, 0.2)',
+                      backgroundColor: isSelected ? 'var(--papandu-gold)' : 'transparent',
+                      color: 'var(--papandu-black)',
+                      fontFamily: 'var(--font-display)',
+                      fontSize: '0.9rem',
+                      fontWeight: isSelected ? 700 : 500,
+                      cursor: isPurchaseDisabled ? 'not-allowed' : 'pointer',
+                      transition: 'all 0.2s ease',
+                      opacity: isPurchaseDisabled ? 0.4 : 1,
+                    }}
+                  >
+                    {size}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
 
           {/* Quantity & Actions */}
           <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>

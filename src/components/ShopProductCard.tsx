@@ -174,16 +174,30 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
             {item.colorway}
           </span>
         </div>
-        <span
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontWeight: 700,
-            fontSize: '0.9rem',
-            color: 'var(--papandu-black)',
-          }}
-        >
-          {formatPrice(item.price)}
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontWeight: 700,
+              fontSize: '0.9rem',
+              color: 'var(--papandu-black)',
+            }}
+          >
+            {formatPrice(item.price)}
+          </span>
+          {item.sizes && item.sizes.length > 0 && (
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                color: '#6B6459',
+                letterSpacing: '0.04em',
+              }}
+            >
+              SIZE: {item.sizes.join(' · ')}
+            </span>
+          )}
+        </div>
       </div>
     </Link>
   );

@@ -18,6 +18,8 @@ const CATEGORIES = [
   { id: 'accessories', label: 'Accessories' },
 ];
 
+const SIZE_FILTERS = ['all', 'S', 'M', 'L', 'XL', 'XXXL'] as const;
+
 // Colorway image filenames follow "papandu-stripe-shirt-<slug>-front.jpg" — reused here
 // (mirrors the same helper in ProductDetailClient.tsx) so a grid card's link and the PDP
 // always agree on which colorway "slug" means.
@@ -43,6 +45,7 @@ function expandColorways(products: ProductItem[]): ShopDisplayItem[] {
           colorHex: cw.colorHex,
           mainImage: cw.mainImage,
           secondaryImage: cw.secondaryImage,
+          sizes: cw.size && cw.size.length > 0 ? cw.size : product.sizes,
           displayKey: `${product.id}-${colorwaySlugFromImage(cw.mainImage) || cw.name}`,
           colorSlug: colorwaySlugFromImage(cw.mainImage),
         });
@@ -67,6 +70,7 @@ function ShopPageContent() {
     const requested = searchParams.get('category');
     return requested && CATEGORIES.some((c) => c.id === requested) ? requested : 'all';
   });
+  const [selectedSize, setSelectedSize] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [sortBy, setSortBy] = useState<string>('featured');
   const [onlyAvailable, setOnlyAvailable] = useState<boolean>(false);
@@ -94,6 +98,9 @@ function ShopPageContent() {
         if (selectedCategory !== 'all' && item.category !== selectedCategory) {
           return false;
         }
+        if (selectedSize !== 'all' && (!item.sizes || !item.sizes.includes(selectedSize))) {
+          return false;
+        }
         if (onlyAvailable && item.status === 'SOLD OUT') {
           return false;
         }
@@ -112,10 +119,10 @@ function ShopPageContent() {
         if (sortBy === 'newest') return (b.status === 'NEW' ? 1 : 0) - (a.status === 'NEW' ? 1 : 0);
         return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       });
-  }, [displayItems, selectedCategory, searchQuery, sortBy, onlyAvailable]);
+  }, [displayItems, selectedCategory, selectedSize, searchQuery, sortBy, onlyAvailable]);
 
   const activeCategoryLabel = CATEGORIES.find((c) => c.id === selectedCategory)?.label || 'All Items';
-  const isFiltering = selectedCategory !== 'all' || Boolean(searchQuery) || onlyAvailable;
+  const isFiltering = selectedCategory !== 'all' || selectedSize !== 'all' || Boolean(searchQuery) || onlyAvailable;
 
   return (
     <div style={{ paddingBottom: '5rem', backgroundColor: 'var(--papandu-cream)' }}>
@@ -361,6 +368,54 @@ function ShopPageContent() {
             >
               {onlyAvailable ? 'IN STOCK ONLY' : 'ALL STOCK'}
             </button>
+
+            {/* Size Filter Row */}
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                flexWrap: 'wrap',
+                alignItems: 'center',
+                gap: '0.55rem',
+                paddingTop: '0.75rem',
+                borderTop: '1px solid rgba(9, 10, 14, 0.06)',
+              }}
+            >
+              <span
+                style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '0.75rem',
+                  letterSpacing: '0.08em',
+                  color: '#6B6459',
+                  marginRight: '0.25rem',
+                }}
+              >
+                SIZE:
+              </span>
+              {SIZE_FILTERS.map((sz) => {
+                const isActive = selectedSize === sz;
+                return (
+                  <button
+                    key={sz}
+                    onClick={() => setSelectedSize(sz)}
+                    style={{
+                      fontFamily: 'var(--font-mono)',
+                      fontSize: '0.76rem',
+                      letterSpacing: '0.06em',
+                      padding: '0.32rem 0.75rem',
+                      borderRadius: '9999px',
+                      border: isActive ? '1px solid var(--papandu-black)' : '1px solid rgba(9, 10, 14, 0.15)',
+                      backgroundColor: isActive ? 'var(--papandu-black)' : 'transparent',
+                      color: isActive ? 'var(--papandu-cream)' : 'var(--papandu-black)',
+                      cursor: 'pointer',
+                      transition: 'all 0.15s ease',
+                    }}
+                  >
+                    {sz === 'all' ? 'ALL SIZES' : sz}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
       </section>
@@ -383,6 +438,7 @@ function ShopPageContent() {
             <button
               onClick={() => {
                 setSelectedCategory('all');
+                setSelectedSize('all');
                 setSearchQuery('');
                 setOnlyAvailable(false);
               }}
@@ -464,6 +520,7 @@ function ShopPageContent() {
               <button
                 onClick={() => {
                   setSelectedCategory('all');
+                  setSelectedSize('all');
                   setSearchQuery('');
                   setOnlyAvailable(false);
                 }}
