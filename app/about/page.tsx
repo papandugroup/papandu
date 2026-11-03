@@ -135,8 +135,8 @@ export default function AboutPage() {
               <figure style={{ margin: 0 }}>
                 <div className="ed-figure">
                   <Image
-                    src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?q=80&w=1200&auto=format&fit=crop"
-                    alt="Streetwear culture on the street in Lagos"
+                    src="/best-collection-pics/DSC_0132.jpg"
+                    alt="PAPANDU Signature Stripe Shirt worn in Lagos, Nigeria"
                     fill
                     sizes="(max-width: 960px) 100vw, 45vw"
                     style={{ objectFit: 'cover' }}
