@@ -29,6 +29,7 @@ export const CartDrawer: React.FC = () => {
     cartTotalNGN,
     freeShippingThresholdNGN,
     setOrderSuccess,
+    isItemSoldOut,
   } = useStore();
 
   const [customerEmail, setCustomerEmail] = useState('');
@@ -47,9 +48,18 @@ export const CartDrawer: React.FC = () => {
   const progressPercent = Math.min(100, Math.round((cartTotalNGN / freeShippingThresholdNGN) * 100));
   const remainingForFreeShipping = Math.max(0, freeShippingThresholdNGN - cartTotalNGN);
 
+  const hasSoldOutItems = cart.some(
+    (item) => item.product.status === 'SOLD OUT' || isItemSoldOut(item.product.slug, item.colorway)
+  );
+
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
+
+    if (hasSoldOutItems) {
+      setFormError('One or more items in your bag have sold out. Please remove them to proceed.');
+      return;
+    }
 
     if (!customerEmail || !customerEmail.includes('@')) {
       setFormError('Please provide a valid email address for your receipt.');
@@ -230,6 +240,7 @@ export const CartDrawer: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {cart.map((item) => {
                 const isOneOfOne = isProductOneOfOne(item.product, item.colorway);
+                const isSoldOut = item.product.status === 'SOLD OUT' || isItemSoldOut(item.product.slug, item.colorway);
                 return (
                   <div
                     key={`${item.product.id}-${item.size}`}
@@ -238,6 +249,7 @@ export const CartDrawer: React.FC = () => {
                       gap: '14px',
                       paddingBottom: '16px',
                       borderBottom: '1px solid rgba(9, 10, 14, 0.06)',
+                      opacity: isSoldOut ? 0.7 : 1,
                     }}
                   >
                     <div
@@ -277,6 +289,34 @@ export const CartDrawer: React.FC = () => {
                         <p style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: '#6B6459', marginTop: '4px' }}>
                           SIZE: <span style={{ color: 'var(--papandu-red)' }}>{item.size}</span> · {item.colorway || item.product.colorway}
                         </p>
+
+                        {isSoldOut && (
+                          <div
+                            style={{
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px',
+                              padding: '2px 6px',
+                              backgroundColor: 'rgba(118, 5, 4, 0.1)',
+                              border: '1px solid var(--papandu-red)',
+                              borderRadius: '2px',
+                              marginTop: '4px',
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontFamily: 'var(--font-mono)',
+                                fontSize: '0.65rem',
+                                fontWeight: 700,
+                                letterSpacing: '0.08em',
+                                color: 'var(--papandu-red)',
+                                textTransform: 'uppercase',
+                              }}
+                            >
+                              SOLD OUT · REMOVE TO CHECKOUT
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '8px' }}>
@@ -430,19 +470,21 @@ export const CartDrawer: React.FC = () => {
               {/* Checkout Pay Button */}
               <button
                 type="submit"
-                disabled={isProcessing}
+                disabled={isProcessing || hasSoldOutItems}
                 className="btn-primary"
                 style={{
                   width: '100%',
                   padding: '16px',
                   fontSize: '1.1rem',
                   letterSpacing: '0.08em',
-                  cursor: isProcessing ? 'not-allowed' : 'pointer',
-                  opacity: isProcessing ? 0.75 : 1,
+                  cursor: (isProcessing || hasSoldOutItems) ? 'not-allowed' : 'pointer',
+                  opacity: (isProcessing || hasSoldOutItems) ? 0.6 : 1,
                 }}
               >
                 {isProcessing ? (
                   <span>PROCESSING CHECKOUT...</span>
+                ) : hasSoldOutItems ? (
+                  <span>REMOVE SOLD OUT ITEM TO PROCEED</span>
                 ) : (
                   <>
                     <Lock size={16} color="#FBDC6A" />

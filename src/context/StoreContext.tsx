@@ -144,12 +144,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const inventoryKey = getInventoryKey(product.slug, selectedColorway);
     const maxPerOrder = product.maxPerOrder || (isOneOfOne ? 1 : 5);
 
+    if (product.status === 'SOLD OUT' || isItemSoldOut(product.slug, selectedColorway)) {
+      setCartToast('This exclusive piece is already sold out.');
+      return;
+    }
+
     setCart((prev) => {
       const existingIndex = prev.findIndex(
         (item) =>
           item.product.id === product.id &&
           item.colorway === selectedColorway &&
-          item.size === selectedSize
+          (isOneOfOne || item.size === selectedSize)
       );
 
       if (existingIndex > -1) {

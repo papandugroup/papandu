@@ -12,6 +12,7 @@ export interface InventoryRecord {
 export type InventoryStore = Record<string, InventoryRecord>;
 
 const INVENTORY_FILE = path.join(process.cwd(), 'data', 'inventory-status.json');
+const TMP_INVENTORY_FILE = path.join('/tmp', 'papandu-inventory-status.json');
 
 // In-memory cache to guarantee sub-millisecond reads during high traffic drops
 let memoryCache: InventoryStore | null = null;
@@ -19,29 +20,56 @@ let memoryCache: InventoryStore | null = null;
 function ensureDataDirectory(): void {
   const dataDir = path.dirname(INVENTORY_FILE);
   if (!fs.existsSync(dataDir)) {
-    fs.mkdirSync(dataDir, { recursive: true });
+    try {
+      fs.mkdirSync(dataDir, { recursive: true });
+    } catch {
+      // Ignored on read-only environments (e.g. Vercel serverless)
+    }
   }
 }
 
 function loadInventoryFromDisk(): InventoryStore {
+  const store: InventoryStore = {};
+
+  // 1. Read bundled repository status (committed to git)
   try {
-    ensureDataDirectory();
     if (fs.existsSync(INVENTORY_FILE)) {
       const content = fs.readFileSync(INVENTORY_FILE, 'utf-8');
-      return JSON.parse(content || '{}');
+      Object.assign(store, JSON.parse(content || '{}'));
     }
   } catch (error) {
     console.warn('[Inventory] Failed to read inventory-status.json from disk:', error);
   }
-  return {};
+
+  // 2. Read runtime /tmp updates (works across warm serverless invocations on Vercel)
+  try {
+    if (fs.existsSync(TMP_INVENTORY_FILE)) {
+      const content = fs.readFileSync(TMP_INVENTORY_FILE, 'utf-8');
+      Object.assign(store, JSON.parse(content || '{}'));
+    }
+  } catch (error) {
+    // Non-critical /tmp read
+  }
+
+  return store;
 }
 
 function persistInventoryToDisk(store: InventoryStore): void {
+  memoryCache = store;
+
+  // 1. Persist to project directory (works in local development)
   try {
     ensureDataDirectory();
     fs.writeFileSync(INVENTORY_FILE, JSON.stringify(store, null, 2), 'utf-8');
+  } catch {
+    // Expected on Vercel serverless where /var/task is read-only
+  }
+
+  // 2. Persist to /tmp (writable on Vercel serverless / AWS Lambda)
+  try {
+    fs.writeFileSync(TMP_INVENTORY_FILE, JSON.stringify(store, null, 2), 'utf-8');
   } catch (error) {
-    console.error('[Inventory] Failed to persist inventory-status.json to disk:', error);
+    console.warn('[Inventory] Failed to persist to /tmp:', error);
   }
 }
 

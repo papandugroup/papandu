@@ -7,6 +7,7 @@ import StarIcon from '../../src/components/StarIcon';
 import { FALLBACK_PRODUCTS, ProductItem } from '../../src/data/fallbackProducts';
 import { getProducts } from '../../src/lib/sanity.client';
 import { resolveProductStatus } from '../../src/lib/dropConfig';
+import { useStore } from '../../src/context/StoreContext';
 import { SlidersHorizontal, ChevronDown, Search, X } from 'lucide-react';
 
 const CATEGORIES = [
@@ -63,6 +64,7 @@ function expandColorways(products: ProductItem[]): ShopDisplayItem[] {
 
 function ShopPageContent() {
   const searchParams = useSearchParams();
+  const { isItemSoldOut } = useStore();
   const [products, setProducts] = useState<ProductItem[]>(() =>
     FALLBACK_PRODUCTS.map(resolveProductStatus)
   );
@@ -101,7 +103,8 @@ function ShopPageContent() {
         if (selectedSize !== 'all' && (!item.sizes || !item.sizes.includes(selectedSize))) {
           return false;
         }
-        if (onlyAvailable && item.status === 'SOLD OUT') {
+        const isItemSold = item.status === 'SOLD OUT' || isItemSoldOut(item.slug, item.colorway);
+        if (onlyAvailable && isItemSold) {
           return false;
         }
         if (searchQuery.trim()) {
@@ -119,7 +122,7 @@ function ShopPageContent() {
         if (sortBy === 'newest') return (b.status === 'NEW' ? 1 : 0) - (a.status === 'NEW' ? 1 : 0);
         return (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0);
       });
-  }, [displayItems, selectedCategory, selectedSize, searchQuery, sortBy, onlyAvailable]);
+  }, [displayItems, selectedCategory, selectedSize, searchQuery, sortBy, onlyAvailable, isItemSoldOut]);
 
   const activeCategoryLabel = CATEGORIES.find((c) => c.id === selectedCategory)?.label || 'All Items';
   const isFiltering = selectedCategory !== 'all' || selectedSize !== 'all' || Boolean(searchQuery) || onlyAvailable;

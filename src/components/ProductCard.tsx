@@ -21,12 +21,13 @@ function colorwaySlugFromImage(imagePath: string): string {
 }
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
-  const { formatPrice, addToCart } = useStore();
+  const { formatPrice, addToCart, isItemSoldOut } = useStore();
   const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] || 'M');
   const [isHovered, setIsHovered] = useState(false);
   const [addedNotice, setAddedNotice] = useState(false);
 
-  const isSoldOut = product.status === 'SOLD OUT' || product.stockCount <= 0;
+  const inventorySoldOut = isItemSoldOut(product.slug, product.colorway);
+  const isSoldOut = product.status === 'SOLD OUT' || product.stockCount <= 0 || inventorySoldOut;
   const isComingSoon = product.status === 'COMING SOON' && !isDropLive();
   const isDisabled = isSoldOut || isComingSoon;
 
@@ -106,14 +107,19 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         )}
 
         {/* Status Micro-Tag Badge */}
-        {product.status && product.status !== 'none' && (
+        {isSoldOut ? (
+          <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
+            <span className="tag-badge tag-soldout">
+              <StarIcon size={10} />
+              <span>SOLD OUT</span>
+            </span>
+          </div>
+        ) : product.status && product.status !== 'none' ? (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 10 }}>
             <span
               className={`tag-badge ${
                 product.status === 'LIMITED'
                   ? 'tag-limited'
-                  : product.status === 'SOLD OUT'
-                  ? 'tag-soldout'
                   : product.status === 'COMING SOON'
                   ? 'tag-coming-soon'
                   : 'tag-new'
@@ -123,7 +129,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
               <span>{product.status}</span>
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* Colorway Label Badge */}
         {product.colorway && (

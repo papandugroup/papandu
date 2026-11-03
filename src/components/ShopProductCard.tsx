@@ -29,10 +29,11 @@ interface ShopProductCardProps {
 }
 
 export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
-  const { formatPrice } = useStore();
+  const { formatPrice, isItemSoldOut } = useStore();
   const [isHovered, setIsHovered] = useState(false);
 
-  const isSoldOut = item.status === 'SOLD OUT' || item.stockCount <= 0;
+  const inventorySoldOut = isItemSoldOut(item.slug, item.colorway);
+  const isSoldOut = item.status === 'SOLD OUT' || item.stockCount <= 0 || inventorySoldOut;
   const isComingSoon = item.status === 'COMING SOON' && !isDropLive();
 
   const href = item.colorSlug
@@ -63,8 +64,9 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
           style={{
             objectFit: 'cover',
             transition: 'opacity 0.4s ease, transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-            opacity: isHovered && item.secondaryImage ? 0 : 1,
-            transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+            opacity: isSoldOut ? 0.72 : isHovered && item.secondaryImage ? 0 : 1,
+            transform: isHovered && !isSoldOut ? 'scale(1.03)' : 'scale(1)',
+            filter: isSoldOut ? 'grayscale(25%)' : 'none',
           }}
         />
         {item.secondaryImage && (
@@ -85,14 +87,19 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
         )}
 
         {/* Status tag */}
-        {item.status && item.status !== 'none' && (
+        {isSoldOut ? (
+          <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 5 }}>
+            <span className="tag-badge tag-soldout">
+              <StarIcon size={9} />
+              <span>SOLD OUT</span>
+            </span>
+          </div>
+        ) : item.status && item.status !== 'none' ? (
           <div style={{ position: 'absolute', top: '12px', left: '12px', zIndex: 5 }}>
             <span
               className={`tag-badge ${
                 item.status === 'LIMITED'
                   ? 'tag-limited'
-                  : item.status === 'SOLD OUT'
-                  ? 'tag-soldout'
                   : item.status === 'COMING SOON'
                   ? 'tag-coming-soon'
                   : 'tag-new'
@@ -102,7 +109,7 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
               <span>{item.status}</span>
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* Front/back dot indicator, Olaf-style */}
         {item.secondaryImage && (
@@ -180,12 +187,25 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
               fontFamily: 'var(--font-mono)',
               fontWeight: 700,
               fontSize: '0.9rem',
-              color: 'var(--papandu-black)',
+              color: isSoldOut ? '#8E8A82' : 'var(--papandu-black)',
+              textDecoration: isSoldOut ? 'line-through' : 'none',
             }}
           >
             {formatPrice(item.price)}
           </span>
-          {item.sizes && item.sizes.length > 0 && (
+          {isSoldOut ? (
+            <span
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: '0.72rem',
+                color: 'var(--papandu-red)',
+                fontWeight: 700,
+                letterSpacing: '0.06em',
+              }}
+            >
+              SOLD OUT
+            </span>
+          ) : item.sizes && item.sizes.length > 0 ? (
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
@@ -196,7 +216,7 @@ export const ShopProductCard: React.FC<ShopProductCardProps> = ({ item }) => {
             >
               SIZE: {item.sizes.join(' · ')}
             </span>
-          )}
+          ) : null}
         </div>
       </div>
     </Link>

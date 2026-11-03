@@ -40,8 +40,12 @@ export async function POST(req: Request) {
           const key = item.inventoryKey || (productSlug ? getInventoryKey(productSlug, colorwayName) : null);
 
           if (key) {
-            const foundProduct = FALLBACK_PRODUCTS.find((p) => p.slug === productSlug);
-            const isOneOfOne = foundProduct ? isProductOneOfOne(foundProduct, colorwayName) : true;
+            const foundProduct = FALLBACK_PRODUCTS.find(
+              (p) => p.slug === productSlug || p.id === item.productId || p.id === item.product?.id
+            );
+            const isOneOfOne = foundProduct
+              ? isProductOneOfOne(foundProduct, colorwayName)
+              : (productSlug === 'for-the-stars-signature-stripe-shirt' || (item.title && item.title.includes('For The Stars')));
             if (isOneOfOne) {
               soldKeys.push(key);
             }

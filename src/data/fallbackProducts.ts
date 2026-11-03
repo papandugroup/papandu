@@ -102,6 +102,13 @@ export function getInventoryKey(productSlug: string, colorway?: string | null): 
  * Returns true if the product or colorway is designated as 1-of-1 archive stock.
  */
 export function isProductOneOfOne(product: ProductItem, colorwayName?: string): boolean {
+  if (
+    product.slug === 'for-the-stars-signature-stripe-shirt' ||
+    product.id === 'prod-for-the-stars' ||
+    (product.title && product.title.toLowerCase().includes('for the stars'))
+  ) {
+    return true;
+  }
   if (colorwayName && product.colorways) {
     const matched = product.colorways.find((cw) => cw.name.toLowerCase() === colorwayName.toLowerCase());
     if (matched?.inventoryType) {
@@ -118,8 +125,8 @@ export const FALLBACK_PRODUCTS: ProductItem[] = [
     slug: 'for-the-stars-signature-stripe-shirt',
     price: 36800,
     category: 'shirts',
-    inventoryType: 'standard',
-    maxPerOrder: 5,
+    inventoryType: 'one_of_one',
+    maxPerOrder: 1,
     status: 'NEW',
     isFeatured: true,
     colorway: 'Cream / Gold Star',

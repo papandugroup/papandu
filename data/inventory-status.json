@@ -13,5 +13,10 @@
     "isSoldOut": true,
     "soldAt": "2026-10-25T00:00:00.000Z",
     "orderReference": "MANUAL_MARK_SOLD_OUT_DISPLAY_ONLY"
+  },
+  "for-the-stars-signature-stripe-shirt::navy-burgundy-pinstripe": {
+    "isSoldOut": true,
+    "soldAt": "2026-11-03T08:00:00.000Z",
+    "orderReference": "PAP-1793637350270-2484"
   }
 }

@@ -19,11 +19,12 @@ export async function POST(req: Request) {
       const key = item.inventoryKey || getInventoryKey(productSlug, colorwayName);
 
       // Check if product exists and is 1-of-1
-      const foundProduct = FALLBACK_PRODUCTS.find((p) => p.slug === productSlug);
-      if (!foundProduct) {
-        return NextResponse.json({ success: false, message: 'Invalid product specified' }, { status: 404 });
-      }
-      const isOneOfOne = isProductOneOfOne(foundProduct, colorwayName);
+      const foundProduct = FALLBACK_PRODUCTS.find(
+        (p) => p.slug === productSlug || p.id === item.productId || p.id === item.product?.id
+      );
+      const isOneOfOne = foundProduct
+        ? isProductOneOfOne(foundProduct, colorwayName)
+        : (productSlug === 'for-the-stars-signature-stripe-shirt' || (item.title && item.title.includes('For The Stars')));
 
       if (isOneOfOne) {
         oneOfOneKeys.push(key);

@@ -60,7 +60,9 @@ export async function POST(req: Request) {
       const key = item.inventoryKey || getInventoryKey(productSlug, colorwayName);
 
       // Find product in fallback data (in production, this would query Sanity)
-      const product = FALLBACK_PRODUCTS.find((p) => p.slug === productSlug);
+      const product = FALLBACK_PRODUCTS.find(
+        (p) => p.slug === productSlug || p.id === item.productId || p.id === productSlug
+      );
       if (!product) {
         return NextResponse.json(
           { success: false, message: `Product not found: ${productSlug}` },
