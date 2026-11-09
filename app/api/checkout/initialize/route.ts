@@ -153,6 +153,8 @@ export async function POST(req: Request) {
 
     const reference = `PAP-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
     const amountInKobo = Math.round(totalAmountNGN * 100);
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.papandu.store';
+    const callback_url = `${siteUrl}/checkout/callback`;
 
     const paystackResponse = await fetch('https://api.paystack.co/transaction/initialize', {
       method: 'POST',
@@ -165,6 +167,7 @@ export async function POST(req: Request) {
         amount: amountInKobo,
         currency: 'NGN',
         reference,
+        callback_url,
         metadata: {
           custom_fields: [
             { display_name: 'Customer Name', variable_name: 'customer_name', value: name },

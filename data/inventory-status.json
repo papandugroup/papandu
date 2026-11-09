@@ -18,5 +18,10 @@
     "isSoldOut": true,
     "soldAt": "2026-11-03T08:00:00.000Z",
     "orderReference": "PAP-1793637350270-2484"
+  },
+  "for-the-stars-signature-stripe-shirt::cream-gold-star": {
+    "isSoldOut": true,
+    "soldAt": "2026-11-09T11:44:00.000Z",
+    "orderReference": "PAYSTACK_LIVE_PURCHASE"
   }
 }

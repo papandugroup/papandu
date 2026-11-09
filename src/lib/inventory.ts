@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { FALLBACK_PRODUCTS, getInventoryKey, isProductOneOfOne } from '@/data/fallbackProducts';
 
 export interface InventoryRecord {
   isSoldOut: boolean;
@@ -16,6 +17,80 @@ const TMP_INVENTORY_FILE = path.join('/tmp', 'papandu-inventory-status.json');
 
 // In-memory cache to guarantee sub-millisecond reads during high traffic drops
 let memoryCache: InventoryStore | null = null;
+let lastPaystackSync = 0;
+const PAYSTACK_SYNC_TTL_MS = 25 * 1000; // 25 seconds cache
+
+/**
+ * Automatically syncs verified successful transactions from Paystack API.
+ * This guarantees that even if a customer paid on mobile/redirect, closed the tab,
+ * or the webhook was delayed or dropped, any paid piece is immediately marked SOLD OUT.
+ */
+export async function syncFromPaystack(): Promise<void> {
+  const secretKey = process.env.PAYSTACK_SECRET_KEY;
+  if (!secretKey || secretKey.includes('demo') || secretKey.startsWith('sk_test_demo')) {
+    return;
+  }
+
+  const now = Date.now();
+  if (now - lastPaystackSync < PAYSTACK_SYNC_TTL_MS) {
+    return;
+  }
+
+  try {
+    const res = await fetch('https://api.paystack.co/transaction?status=success&perPage=50', {
+      headers: {
+        Authorization: `Bearer ${secretKey}`,
+        'Content-Type': 'application/json',
+      },
+      signal: AbortSignal.timeout(4500),
+    });
+
+    if (!res.ok) return;
+
+    const data = await res.json();
+    if (data?.status && Array.isArray(data.data)) {
+      const store = getStore();
+      let changed = false;
+
+      for (const tx of data.data) {
+        if (tx.status === 'success' && tx.metadata?.items && Array.isArray(tx.metadata.items)) {
+          for (const item of tx.metadata.items) {
+            const productSlug = item.slug || item.product?.slug;
+            const colorwayName = item.colorway || item.product?.colorway;
+            const key = item.inventoryKey || (productSlug ? getInventoryKey(productSlug, colorwayName) : null);
+
+            if (key) {
+              const foundProduct = FALLBACK_PRODUCTS.find(
+                (p) => p.slug === productSlug || p.id === item.productId || p.id === item.product?.id
+              );
+              const isOneOfOne = foundProduct
+                ? isProductOneOfOne(foundProduct, colorwayName)
+                : (productSlug === 'for-the-stars-signature-stripe-shirt' || (item.title && item.title.includes('For The Stars')));
+
+              if (isOneOfOne && !store[key]?.isSoldOut) {
+                store[key] = {
+                  isSoldOut: true,
+                  soldAt: tx.paid_at || new Date().toISOString(),
+                  orderReference: tx.reference,
+                };
+                changed = true;
+                console.log(`[Inventory Sync] Automatically marked SOLD OUT via Paystack API: ${key} (Ref: ${tx.reference})`);
+              }
+            }
+          }
+        }
+      }
+
+      if (changed) {
+        persistInventoryToDisk(store);
+      }
+      lastPaystackSync = now;
+    }
+  } catch (err) {
+    // Non-blocking: fail quietly so inventory endpoint is always fast and available
+    console.warn('[Inventory Sync] Paystack sync notice:', err);
+  }
+}
 
 function ensureDataDirectory(): void {
   const dataDir = path.dirname(INVENTORY_FILE);
@@ -85,6 +160,7 @@ function getStore(): InventoryStore {
  * Automatically cleans up expired temporary reservations.
  */
 export async function getInventoryStatus(): Promise<Record<string, { isSoldOut: boolean; isReserved: boolean }>> {
+  await syncFromPaystack();
   const store = getStore();
   const now = Date.now();
   const result: Record<string, { isSoldOut: boolean; isReserved: boolean }> = {};
@@ -105,6 +181,7 @@ export async function getInventoryStatus(): Promise<Record<string, { isSoldOut: 
  * An item is unavailable if it is permanently sold out or currently under active checkout hold.
  */
 export async function isItemAvailable(itemKey: string): Promise<boolean> {
+  await syncFromPaystack();
   const store = getStore();
   const record = store[itemKey];
   if (!record) return true;
@@ -128,6 +205,7 @@ export async function reserveItems(
   sessionId: string,
   ttlMinutes: number = 10
 ): Promise<{ success: boolean; unavailableKey?: string }> {
+  await syncFromPaystack();
   const store = getStore();
   const now = Date.now();
   const expiry = now + ttlMinutes * 60 * 1000;

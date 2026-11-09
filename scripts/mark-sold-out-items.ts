@@ -7,7 +7,8 @@ const soldOutItems = [
   'for-the-stars-signature-stripe-shirt::ivory-oversized',
   'for-the-stars-signature-stripe-shirt::steel-blue-stripe',
   'for-the-stars-signature-stripe-shirt::mauve-pinstripe',
-  'for-the-stars-signature-stripe-shirt::navy-burgundy-pinstripe'
+  'for-the-stars-signature-stripe-shirt::navy-burgundy-pinstripe',
+  'for-the-stars-signature-stripe-shirt::cream-gold-star'
 ];
 
 // Mark these items as sold out

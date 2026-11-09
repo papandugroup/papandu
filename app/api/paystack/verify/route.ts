@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { markItemsAsSold, releaseReservation } from '@/lib/inventory';
+import { FALLBACK_PRODUCTS, getInventoryKey, isProductOneOfOne } from '@/data/fallbackProducts';
 
 export async function POST(req: Request) {
   try {
@@ -29,6 +31,36 @@ export async function POST(req: Request) {
     const data = await response.json();
 
     if (data.status && data.data.status === 'success') {
+      const metadata = data.data.metadata;
+      if (metadata && Array.isArray(metadata.items)) {
+        const soldKeys: string[] = [];
+        for (const item of metadata.items) {
+          const productSlug = item.slug || item.product?.slug;
+          const colorwayName = item.colorway || item.product?.colorway;
+          const key = item.inventoryKey || (productSlug ? getInventoryKey(productSlug, colorwayName) : null);
+
+          if (key) {
+            const foundProduct = FALLBACK_PRODUCTS.find(
+              (p) => p.slug === productSlug || p.id === item.productId || p.id === item.product?.id
+            );
+            const isOneOfOne = foundProduct
+              ? isProductOneOfOne(foundProduct, colorwayName)
+              : (productSlug === 'for-the-stars-signature-stripe-shirt' || (item.title && item.title.includes('For The Stars')));
+            if (isOneOfOne) {
+              soldKeys.push(key);
+            }
+          }
+        }
+
+        if (soldKeys.length > 0) {
+          await markItemsAsSold(soldKeys, reference);
+        }
+
+        if (metadata.reservedKeys && Array.isArray(metadata.reservedKeys)) {
+          await releaseReservation(metadata.reservedKeys, metadata.sessionId);
+        }
+      }
+
       return NextResponse.json({
         success: true,
         data: data.data,
