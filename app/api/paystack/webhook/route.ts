@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import crypto from 'crypto';
 import { markItemsAsSold, releaseReservation } from '@/lib/inventory';
 import { FALLBACK_PRODUCTS, getInventoryKey, isProductOneOfOne } from '@/data/fallbackProducts';
+import { sendOrderConfirmationEmail, OrderConfirmationData } from '@/lib/email';
+
+const processedWebhookOrders = new Set<string>();
 
 export async function POST(req: Request) {
   try {
@@ -59,6 +62,43 @@ export async function POST(req: Request) {
         // Release reservation locks after successful payment
         if (metadata.reservedKeys && Array.isArray(metadata.reservedKeys)) {
           await releaseReservation(metadata.reservedKeys, metadata.sessionId);
+        }
+
+        // Send order confirmation email via Resend (with idempotency check)
+        if (!processedWebhookOrders.has(reference) && customer?.email) {
+          processedWebhookOrders.add(reference);
+
+          const customFields = Array.isArray(metadata.custom_fields) ? metadata.custom_fields : [];
+          const customerName =
+            customFields.find((f: any) => f.variable_name === 'customer_name')?.value ||
+            customer.first_name ||
+            customer.email;
+          const customerPhone = customFields.find((f: any) => f.variable_name === 'phone_number')?.value;
+          const deliveryAddress = customFields.find((f: any) => f.variable_name === 'delivery_address')?.value;
+          const totalFormatted = `₦${Math.round((amount || 0) / 100).toLocaleString()}`;
+
+          const orderData: OrderConfirmationData = {
+            reference,
+            customerName: String(customerName).slice(0, 120),
+            customerEmail: customer.email,
+            customerPhone: customerPhone ? String(customerPhone).slice(0, 40) : undefined,
+            deliveryAddress: deliveryAddress ? String(deliveryAddress).slice(0, 300) : undefined,
+            totalFormatted,
+            items: metadata.items.map((i: any) => ({
+              title: i.title || '"For The Stars" Signature Stripe Shirt',
+              slug: i.slug,
+              size: i.size,
+              quantity: i.quantity || 1,
+              price: i.price || (amount ? amount / 100 : 36800),
+              colorway: i.colorway,
+              image: i.image,
+              inventoryKey: i.inventoryKey,
+            })),
+          };
+
+          sendOrderConfirmationEmail(orderData).catch((err) =>
+            console.error('[Paystack Webhook] Email dispatch error:', err)
+          );
         }
       }
     }
